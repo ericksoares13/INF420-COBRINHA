@@ -1,0 +1,6 @@
+.idea
+.idea/workspace.xml
+.idea/misc.xml
+venv
+.venv
+.env
