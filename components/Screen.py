@@ -16,11 +16,8 @@ class Screen:
     def __init__(self):
         if not hasattr(self, '_initialized'):
             Screen.__SCREEN = pygame.display.set_mode((Screen.__SCREEN_WIDTH, Screen.__SCREEN_HEIGHT))
+            Screen.__SCREEN.fill("black")
             self._initialized = True
-
-    @staticmethod
-    def get_screen():
-        return Screen.__SCREEN
 
     @staticmethod
     def get_screen_width():
@@ -33,3 +30,11 @@ class Screen:
     @staticmethod
     def get_pixel_size():
         return Screen.__PIXEL_SIZE
+
+    @staticmethod
+    def draw_snake(snake):
+        pygame.draw.rect(Screen.__SCREEN, "white", snake)
+
+    @staticmethod
+    def draw_food(food):
+        pygame.draw.rect(Screen.__SCREEN, "red", food)
