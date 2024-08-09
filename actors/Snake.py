@@ -48,7 +48,16 @@ class Snake:
 
     @staticmethod
     def grow_snake():
-        Snake.__snake_body.insert(0, Snake.__snake_tail)
+        Snake.__snake_body.insert(0, Snake.__snake_tail.copy())
+        Snake.__snake_head = Snake.__snake_tail
+        Snake.__snake_body = Snake.__snake_body[::-1]
+        Snake.__change_direction()
+
+    @staticmethod
+    def __change_direction():
+        last = Snake.__snake_body[-1]
+        second_last = Snake.__snake_body[-2]
+        Snake.__snake_direction = (last[0] - second_last[0], last[1] - second_last[1])
 
     @staticmethod
     def move_snake():
