@@ -15,8 +15,6 @@ while running:
     Components.update()
     Components.generate()
 
-    pygame.display.flip()
-
     clock.tick(60)
 
 pygame.quit()

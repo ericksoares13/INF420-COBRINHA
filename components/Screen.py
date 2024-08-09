@@ -33,8 +33,13 @@ class Screen:
 
     @staticmethod
     def draw_snake(snake):
-        pygame.draw.rect(Screen.__SCREEN, "white", snake)
+        pygame.draw.rect(Screen.__SCREEN, "green", snake)
 
     @staticmethod
     def draw_food(food):
         pygame.draw.rect(Screen.__SCREEN, "red", food)
+
+    @staticmethod
+    def flip_display():
+        pygame.display.update()
+        Screen.__SCREEN.fill("black")

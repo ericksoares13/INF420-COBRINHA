@@ -1,3 +1,5 @@
+import pygame
+
 from components.Screen import Screen
 from actors.Snake import Snake
 from actors.Food import Food
@@ -6,6 +8,8 @@ from actors.Food import Food
 class Components:
     _INSTANCE = None
     _components = None
+    __move_counter = 0
+    _ate = False
 
     def __new__(cls, *args, **kwargs):
         if cls._INSTANCE is None:
@@ -18,17 +22,47 @@ class Components:
 
     @staticmethod
     def process():
-        pass
+        Components.__move_counter += 1
+
+        Components.__process_key()
+
+        if Components.__move_counter > Snake().get_snake_speed():
+            Snake().move_snake()
+            Components.__move_counter = 0
+
+        Components.__feeding_snake()
+
+    @staticmethod
+    def __process_key():
+        key_pressed = pygame.key.get_pressed()
+        if key_pressed[pygame.K_UP]:
+            Snake().set_snake_direction((0, -Screen.get_pixel_size()))
+        if key_pressed[pygame.K_DOWN]:
+            Snake().set_snake_direction((0, Screen.get_pixel_size()))
+        if key_pressed[pygame.K_LEFT]:
+            Snake().set_snake_direction((-Screen.get_pixel_size(), 0))
+        if key_pressed[pygame.K_RIGHT]:
+            Snake().set_snake_direction((Screen.get_pixel_size(), 0))
+
+    @staticmethod
+    def __feeding_snake():
+        if Snake().get_snake_head_position() == Food().get_position():
+            Components._ate = True
 
     @staticmethod
     def update():
-        pass
+        if Components._ate:
+            Snake().grow_snake()
+            Food().randon_position()
+            Components._ate = False
 
     @staticmethod
     def generate():
-        Components._draw_components()
+        Components.__draw_components()
+        Screen.flip_display()
 
     @staticmethod
-    def _draw_components():
-        Screen.draw_snake(Snake().get_snake_pixel())
+    def __draw_components():
         Screen.draw_food(Food().get_food_pixel())
+        for part in Snake().get_snake_body():
+            Screen.draw_snake(part)
