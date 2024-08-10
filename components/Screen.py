@@ -34,6 +34,10 @@ class Screen:
         return Screen.__PIXEL_SIZE
 
     @staticmethod
+    def get_quant_pixel():
+        return ((Screen.__SCREEN_HEIGHT // Screen.__PIXEL_SIZE) - 1) ** 2
+
+    @staticmethod
     def get_state():
         return Screen.__running
 
@@ -61,6 +65,10 @@ class Screen:
         w = Screen.__SCREEN_WIDTH
         h = Screen.__SCREEN_HEIGHT
         b = Screen.__PIXEL_SIZE // 2
+        for x in range(b, w, b * 2):
+            pygame.draw.line(Screen.__SCREEN, (230, 230, 230), (x, 0), (x, h))
+        for y in range(b, h, b * 2):
+            pygame.draw.line(Screen.__SCREEN, (230, 230, 230), (0, y), (w, y))
         pygame.draw.rect(Screen.__SCREEN, "black", pygame.Rect(0, 0, w, b))
         pygame.draw.rect(Screen.__SCREEN, "black", pygame.Rect(0, 0, b, h))
         pygame.draw.rect(Screen.__SCREEN, "black", pygame.Rect(0, h - b, w, b))

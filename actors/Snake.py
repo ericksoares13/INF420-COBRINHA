@@ -34,6 +34,10 @@ class Snake:
         return Snake.__snake_body
 
     @staticmethod
+    def get_snake_size():
+        return len(Snake.__snake_body)
+
+    @staticmethod
     def get_snake_head_position():
         return Snake.__snake_head.center
 
@@ -51,12 +55,21 @@ class Snake:
         Snake.__snake_head = Snake.__snake_tail
         Snake.__snake_body = Snake.__snake_body[::-1]
         Snake.__change_direction()
+        Snake.__update_velocity()
 
     @staticmethod
     def __change_direction():
         last = Snake.__snake_body[-1]
         second_last = Snake.__snake_body[-2]
         Snake.__snake_direction = (last[0] - second_last[0], last[1] - second_last[1])
+
+    @staticmethod
+    def __update_velocity():
+        max_length = Screen().get_quant_pixel()
+        m = -15 / (max_length - 1)
+        Snake.__snake_speed = m * Snake.get_snake_size() - m + 15
+        if Snake.__snake_speed < 5:
+            Snake.__snake_speed = 5
 
     @staticmethod
     def move_snake():
@@ -76,7 +89,7 @@ class Snake:
 
     @staticmethod
     def collide_without_head(pos):
-        for part in Snake.__snake_body[0:-2]:
+        for part in Snake.__snake_body[:-1]:
             if part.collidepoint(pos):
                 return True
         return False
