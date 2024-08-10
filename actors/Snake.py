@@ -67,6 +67,8 @@ class Snake:
 
         if Snake().collide_without_head(Snake().get_snake_head_position()):
             Screen().end_game()
+        if Snake().collide_with_border():
+            Screen().end_game()
 
     @staticmethod
     def collide_any_part(pos):
@@ -77,4 +79,17 @@ class Snake:
         for part in Snake.__snake_body[0:-2]:
             if part.collidepoint(pos):
                 return True
+        return False
+
+    @staticmethod
+    def collide_with_border():
+        x, y = Snake().get_snake_head_position()
+        if x < Screen().get_pixel_size():
+            return True
+        if y < Screen().get_pixel_size():
+            return True
+        if x > Screen().get_screen_width() - Screen().get_pixel_size():
+            return True
+        if y > Screen().get_screen_height() - Screen().get_pixel_size():
+            return True
         return False

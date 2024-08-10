@@ -43,6 +43,8 @@ class Components:
             Snake().set_snake_direction((-Screen.get_pixel_size(), 0))
         if key_pressed[pygame.K_RIGHT] and Snake().get_snake_direction() != (-Screen.get_pixel_size(), 0):
             Snake().set_snake_direction((Screen.get_pixel_size(), 0))
+        if key_pressed[pygame.K_ESCAPE]:
+            Screen.end_game()
 
     @staticmethod
     def __feeding_snake():
@@ -65,4 +67,7 @@ class Components:
     def __draw_components():
         Screen.draw_food(Food().get_food_pixel())
         for i, part in enumerate(Snake().get_snake_body()):
-            Screen.draw_snake(part, i / len(Snake().get_snake_body()))
+            if len(Snake().get_snake_body()) == 1:
+                Screen.draw_snake(part, 0.5)
+            else:
+                Screen.draw_snake(part, i / len(Snake().get_snake_body()))

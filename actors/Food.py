@@ -27,8 +27,8 @@ class Food:
     def randon_position():
         pixel_size = Screen.get_pixel_size()
         while True:
-            Food.__x = random.randint(1, (Screen.get_screen_width() - pixel_size) // (pixel_size * 2))
-            Food.__y = random.randint(1, (Screen.get_screen_height() - pixel_size) // (pixel_size * 2))
+            Food.__x = random.randint(1, (Screen.get_screen_width() - pixel_size) // pixel_size)
+            Food.__y = random.randint(1, (Screen.get_screen_height() - pixel_size) // pixel_size)
 
             if not Snake().collide_any_part((Food.__x * pixel_size, Food.__y * pixel_size)):
                 Food.__food.center = (Food.__x * pixel_size, Food.__y * pixel_size)

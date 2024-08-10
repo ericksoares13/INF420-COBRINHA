@@ -2,10 +2,10 @@ import pygame
 
 
 class Screen:
-    # 10, 12, 15, 16, 18, 20, 24, 30, 36, 40, 45, 48, 60, 72, 80, 90, 120, 144, 180, 240 e 360
-    __SCREEN_WIDTH = 720
-    __SCREEN_HEIGHT = 720
-    __PIXEL_SIZE = 60
+    # 18, 20, 30, 36, 50
+    __SCREEN_WIDTH = 900
+    __SCREEN_HEIGHT = 900
+    __PIXEL_SIZE = 50
     __SCREEN = None
     __running = True
     _INSTANCE = None
@@ -18,7 +18,7 @@ class Screen:
     def __init__(self):
         if not hasattr(self, '_initialized'):
             Screen.__SCREEN = pygame.display.set_mode((Screen.__SCREEN_WIDTH, Screen.__SCREEN_HEIGHT))
-            Screen.__SCREEN.fill("black")
+            Screen.__SCREEN.fill("white")
             self._initialized = True
 
     @staticmethod
@@ -39,6 +39,8 @@ class Screen:
 
     @staticmethod
     def draw_snake(part, ratio):
+        border_rect = part.inflate(2, 2)
+        pygame.draw.rect(Screen.__SCREEN, "black", border_rect)
         color = pygame.Color(
             int(pygame.Color("purple").r * (1 - ratio) + pygame.Color("blue").r * ratio),
             int(pygame.Color("purple").g * (1 - ratio) + pygame.Color("blue").g * ratio),
@@ -48,12 +50,21 @@ class Screen:
 
     @staticmethod
     def draw_food(food):
+        border_rect = food.inflate(2, 2)
+        pygame.draw.rect(Screen.__SCREEN, "black", border_rect)
         pygame.draw.rect(Screen.__SCREEN, "red", food)
 
     @staticmethod
     def flip_display():
         pygame.display.update()
         Screen.__SCREEN.fill("white")
+        w = Screen.__SCREEN_WIDTH
+        h = Screen.__SCREEN_HEIGHT
+        b = Screen.__PIXEL_SIZE // 2
+        pygame.draw.rect(Screen.__SCREEN, "black", pygame.Rect(0, 0, w, b))
+        pygame.draw.rect(Screen.__SCREEN, "black", pygame.Rect(0, 0, b, h))
+        pygame.draw.rect(Screen.__SCREEN, "black", pygame.Rect(0, h - b, w, b))
+        pygame.draw.rect(Screen.__SCREEN, "black", pygame.Rect(w - b, 0, b, h))
 
     @staticmethod
     def end_game():
