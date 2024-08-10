@@ -2,10 +2,12 @@ import pygame
 
 
 class Screen:
-    __SCREEN_WIDTH = 1280
+    # 10, 12, 15, 16, 18, 20, 24, 30, 36, 40, 45, 48, 60, 72, 80, 90, 120, 144, 180, 240 e 360
+    __SCREEN_WIDTH = 720
     __SCREEN_HEIGHT = 720
-    __PIXEL_SIZE = 20
+    __PIXEL_SIZE = 60
     __SCREEN = None
+    __running = True
     _INSTANCE = None
 
     def __new__(cls, *args, **kwargs):
@@ -32,8 +34,17 @@ class Screen:
         return Screen.__PIXEL_SIZE
 
     @staticmethod
-    def draw_snake(snake):
-        pygame.draw.rect(Screen.__SCREEN, "green", snake)
+    def get_state():
+        return Screen.__running
+
+    @staticmethod
+    def draw_snake(part, ratio):
+        color = pygame.Color(
+            int(pygame.Color("purple").r * (1 - ratio) + pygame.Color("blue").r * ratio),
+            int(pygame.Color("purple").g * (1 - ratio) + pygame.Color("blue").g * ratio),
+            int(pygame.Color("purple").b * (1 - ratio) + pygame.Color("blue").b * ratio)
+        )
+        pygame.draw.rect(Screen.__SCREEN, color, part)
 
     @staticmethod
     def draw_food(food):
@@ -42,4 +53,8 @@ class Screen:
     @staticmethod
     def flip_display():
         pygame.display.update()
-        Screen.__SCREEN.fill("black")
+        Screen.__SCREEN.fill("white")
+
+    @staticmethod
+    def end_game():
+        Screen.__running = False

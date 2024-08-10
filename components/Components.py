@@ -35,13 +35,13 @@ class Components:
     @staticmethod
     def __process_key():
         key_pressed = pygame.key.get_pressed()
-        if key_pressed[pygame.K_UP]:
+        if key_pressed[pygame.K_UP] and Snake().get_snake_direction() != (0, Screen.get_pixel_size()):
             Snake().set_snake_direction((0, -Screen.get_pixel_size()))
-        if key_pressed[pygame.K_DOWN]:
+        if key_pressed[pygame.K_DOWN] and Snake().get_snake_direction() != (0, -Screen.get_pixel_size()):
             Snake().set_snake_direction((0, Screen.get_pixel_size()))
-        if key_pressed[pygame.K_LEFT]:
+        if key_pressed[pygame.K_LEFT] and Snake().get_snake_direction() != (Screen.get_pixel_size(), 0):
             Snake().set_snake_direction((-Screen.get_pixel_size(), 0))
-        if key_pressed[pygame.K_RIGHT]:
+        if key_pressed[pygame.K_RIGHT] and Snake().get_snake_direction() != (-Screen.get_pixel_size(), 0):
             Snake().set_snake_direction((Screen.get_pixel_size(), 0))
 
     @staticmethod
@@ -64,5 +64,5 @@ class Components:
     @staticmethod
     def __draw_components():
         Screen.draw_food(Food().get_food_pixel())
-        for part in Snake().get_snake_body():
-            Screen.draw_snake(part)
+        for i, part in enumerate(Snake().get_snake_body()):
+            Screen.draw_snake(part, i / len(Snake().get_snake_body()))

@@ -1,15 +1,15 @@
 import pygame
 
 from components.Components import Components
+from components.Screen import Screen
 
 pygame.init()
 clock = pygame.time.Clock()
-running = True
 
-while running:
+while Screen().get_state():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            Screen.end_game()
 
     Components.process()
     Components.update()

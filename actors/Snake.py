@@ -1,6 +1,5 @@
 import pygame
 
-from actors.Food import Food
 from components.Screen import Screen
 
 
@@ -65,3 +64,17 @@ class Snake:
         Snake.__snake_body.append(Snake.__snake_head.copy())
         Snake.__snake_tail = Snake.__snake_body[0]
         Snake.__snake_body.pop(0)
+
+        if Snake().collide_without_head(Snake().get_snake_head_position()):
+            Screen().end_game()
+
+    @staticmethod
+    def collide_any_part(pos):
+        return Snake().get_snake_head_position() == pos or Snake().collide_without_head(pos)
+
+    @staticmethod
+    def collide_without_head(pos):
+        for part in Snake.__snake_body[0:-2]:
+            if part.collidepoint(pos):
+                return True
+        return False
