@@ -16,6 +16,14 @@ class Direction(Enum):
     DOWN = pygame.K_DOWN
 
 
+direction_map = {
+    (0, -Screen.get_pixel_size()): pygame.K_UP,
+    (0, Screen.get_pixel_size()): pygame.K_DOWN,
+    (-Screen.get_pixel_size(), 0): pygame.K_LEFT,
+    (Screen.get_pixel_size(), 0): pygame.K_RIGHT
+}
+
+
 class Components:
     _INSTANCE = None
     _components = None
@@ -73,6 +81,7 @@ class Components:
             Snake().grow_snake()
             Food().randon_position()
             Components._ate = False
+            Components.set_key(direction_map[Snake.get_snake_direction()])
 
     @staticmethod
     def generate():
