@@ -13,8 +13,29 @@ BATCH_SIZE = 1000
 LR = 0.001
 
 
-def collide(point):
+def collide(point, direction=True):
+    if not direction:
+        return False
+    point = point[0] - (Screen.get_pixel_size() // 2), point[1] - (Screen.get_pixel_size() // 2)
     return Snake().collide_with_border(point) or Snake().collide_without_head(point)
+
+
+def collide_snake(dist, direction):
+    if not direction:
+        return False
+
+    x, y = Snake.get_snake_head_position()
+    x -= (Screen.get_pixel_size() // 2)
+    y -= (Screen.get_pixel_size() // 2)
+    while 0 < x < Screen.get_screen_width() and 0 < y < Screen.get_screen_height():
+        x += dist[0]
+        y += dist[1]
+
+        for segment in Snake.get_snake_body():
+            if (x, y) == segment.topleft:
+                return True
+
+    return False
 
 
 class Agent:
@@ -24,7 +45,7 @@ class Agent:
         self.epsilon = 0
         self.gamma = 0.9
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = LinearQNet(11, 256, 3)
+        self.model = LinearQNet(15, 256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
         self._load_model()
 
@@ -51,21 +72,29 @@ class Agent:
         dir_u = Snake().get_snake_direction() == (0, -Screen.get_pixel_size())
         dir_d = Snake().get_snake_direction() == (0, Screen.get_pixel_size())
 
+        tail_x, tail_y = Snake().get_snake_tail_position()
+        dir_tail_x, dir_tail_y = Snake().get_snake_tail_direction()
+        new_tail = tail_x + dir_tail_x, tail_y + dir_tail_y
+
         state = [
-            ((dir_r and collide(point_r)) or
-             (dir_l and collide(point_l)) or
-             (dir_u and collide(point_u)) or
-             (dir_d and collide(point_d))),
+            collide(point_r, dir_r) or collide(point_l, dir_l) or collide(point_u, dir_u) or collide(point_d, dir_d),
+            collide(point_r, dir_u) or collide(point_l, dir_d) or collide(point_u, dir_l) or collide(point_d, dir_r),
+            collide(point_r, dir_d) or collide(point_l, dir_u) or collide(point_u, dir_r) or collide(point_d, dir_l),
 
-            ((dir_u and collide(point_r)) or
-             (dir_d and collide(point_l)) or
-             (dir_l and collide(point_u)) or
-             (dir_r and collide(point_d))),
+            collide_snake((Screen.get_pixel_size(), 0), dir_r) or
+            collide_snake((-Screen.get_pixel_size(), 0), dir_l) or
+            collide_snake((0, -Screen.get_pixel_size()), dir_u) or
+            collide_snake((0, Screen.get_pixel_size()), dir_d),
 
-            ((dir_d and collide(point_r)) or
-             (dir_u and collide(point_l)) or
-             (dir_r and collide(point_u)) or
-             (dir_l and collide(point_d))),
+            collide_snake((Screen.get_pixel_size(), 0), dir_u) or
+            collide_snake((-Screen.get_pixel_size(), 0), dir_d) or
+            collide_snake((0, -Screen.get_pixel_size()), dir_l) or
+            collide_snake((0, Screen.get_pixel_size()), dir_r),
+
+            collide_snake((Screen.get_pixel_size(), 0), dir_d) or
+            collide_snake((-Screen.get_pixel_size(), 0), dir_u) or
+            collide_snake((0, -Screen.get_pixel_size()), dir_r) or
+            collide_snake((0, Screen.get_pixel_size()), dir_l),
 
             dir_l,
             dir_r,
@@ -75,7 +104,9 @@ class Agent:
             food_x < head_x,
             food_x > head_x,
             food_y < head_y,
-            food_y > head_y
+            food_y > head_y,
+
+            collide(new_tail)
         ]
         return np.array(state, dtype=int)
 

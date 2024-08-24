@@ -5,7 +5,7 @@ class Screen:
     # 20, 26, 30, 52
     __SCREEN_WIDTH = 780
     __SCREEN_HEIGHT = 780
-    __PIXEL_SIZE = 20
+    __PIXEL_SIZE = 52
     __SCREEN = None
     __running = True
     _INSTANCE = None

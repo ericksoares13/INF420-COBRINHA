@@ -127,8 +127,6 @@ class Components:
 
     @staticmethod
     def train(action, mode='ia'):
-        game_over = False
-
         Components.set_key(Components.__get_key(action))
         Components.__process_key()
         Snake().move_snake_whitout_colision()
@@ -136,16 +134,14 @@ class Components:
 
         if ((Snake().snake_collide_with_border() or Snake().collide_without_head(Snake().get_snake_head_position()))
                 or (mode == 'train' and Snake().get_train_it() >
-                    100 * Snake().get_snake_size() * (Screen().get_screen_width() // Screen.get_pixel_size()))):
-            game_over = True
+                    10 * Snake().get_snake_size() * (Screen().get_screen_width() // Screen.get_pixel_size()))):
+            return -10, True, Snake().get_score()
 
         reward = 0
-        if game_over:
-            reward = -10
-        elif Components._ate:
+        if Components._ate:
             reward = 10
 
         Components.update()
         Components.generate()
 
-        return reward, game_over, Snake().get_score()
+        return reward, False, Snake().get_score()

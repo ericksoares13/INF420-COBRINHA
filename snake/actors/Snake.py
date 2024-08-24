@@ -131,13 +131,13 @@ class Snake:
     @staticmethod
     def collide_with_border(pos):
         x, y = pos
-        if x < Screen().get_pixel_size():
+        if x < Screen().get_pixel_size() // 2:
             return True
-        if y < Screen().get_pixel_size():
+        if y < Screen().get_pixel_size() // 2:
             return True
-        if x > Screen().get_screen_width() - Screen().get_pixel_size():
+        if x > Screen().get_screen_width() - (Screen().get_pixel_size() // 2):
             return True
-        if y > Screen().get_screen_height() - Screen().get_pixel_size():
+        if y > Screen().get_screen_height() - (Screen().get_pixel_size() // 2):
             return True
         return False
 
