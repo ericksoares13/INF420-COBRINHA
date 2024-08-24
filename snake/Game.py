@@ -9,6 +9,141 @@ from snake.components.Screen import Screen
 import matplotlib.pyplot as plt
 
 
+def process_manual_events(component):
+    key = pygame.key.get_pressed()
+    if key[pygame.K_UP]:
+        component.set_key(pygame.K_UP)
+    elif key[pygame.K_DOWN]:
+        component.set_key(pygame.K_DOWN)
+    elif key[pygame.K_LEFT]:
+        component.set_key(pygame.K_LEFT)
+    elif key[pygame.K_RIGHT]:
+        component.set_key(pygame.K_RIGHT)
+    elif key[pygame.K_ESCAPE]:
+        component.set_key(pygame.K_ESCAPE)
+
+
+def manual_game():
+    component = Components()
+    snake = Snake()
+    food = Food()
+    clock = pygame.time.Clock()
+
+    while Screen().get_state():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                Screen.end_game()
+                return
+
+        process_manual_events(component)
+
+        component.process(snake, food)
+        component.update(snake, food)
+        component.generate(snake, food)
+
+        clock.tick(60)
+
+
+def plot(scores, mean_scores, filename='./model/plot.png'):
+    plt.clf()
+    plt.title('Training...')
+    plt.xlabel('Number of Games')
+    plt.ylabel('Score')
+    plt.plot(scores, label='Scores')
+    plt.plot(mean_scores, label='Mean Scores')
+    plt.ylim(ymin=0)
+    plt.text(len(scores) - 1, scores[-1], str(scores[-1]))
+    plt.text(len(mean_scores) - 1, mean_scores[-1], str(mean_scores[-1]))
+    plt.legend()
+    plt.savefig(filename)
+
+
+def reset_game(sanke, component, food):
+    Screen().start_game()
+    sanke.start_snake()
+    component.set_key(pygame.K_SPACE)
+    food.randon_position()
+
+
+def train():
+    plot_scores = []
+    plot_mean_scores = []
+    total_score = 0
+    record = 0
+    component = Components()
+    snake = Snake()
+    food = Food()
+    agent = Agent(snake, food)
+    clock = pygame.time.Clock()
+    move_counter = 0
+
+    while True:
+        move_counter += 1
+
+        key = pygame.key.get_pressed()
+        if key[pygame.K_ESCAPE]:
+            break
+
+        if move_counter > 0:
+            move_counter = 0
+
+            state_old = agent.get_state()
+            final_move = agent.get_action(state_old)
+
+            reward, done, score = component.train(snake, food, final_move, 'train')
+
+            state_new = agent.get_state()
+            agent.train_short_memory(state_old, final_move, reward, state_new, done)
+            agent.remember(state_old, final_move, reward, state_new, done)
+
+            if done:
+                reset_game(snake, component, food)
+                agent.n_games += 1
+                agent.train_long_memory()
+                if score > record:
+                    record = score
+                    agent.model.save()
+
+                print('Game', agent.n_games, 'Score', score, 'Record:', record)
+
+                plot_scores.append(score)
+                total_score += score
+                mean_score = total_score / agent.n_games
+                plot_mean_scores.append(mean_score)
+                plot(plot_scores, plot_mean_scores)
+
+        clock.tick(60)
+
+
+def ia():
+    component = Components()
+    snake = Snake()
+    food = Food()
+    agent = Agent(snake, food)
+    clock = pygame.time.Clock()
+    move_counter = 0
+
+    while True:
+        move_counter += 1
+
+        key = pygame.key.get_pressed()
+        if key[pygame.K_ESCAPE]:
+            break
+
+        if move_counter > snake.get_snake_speed():
+            move_counter = 0
+
+            state_old = agent.get_state()
+            final_move = agent.get_action(state_old)
+
+            _, done, _ = component.train(snake, food, final_move)
+
+            if done:
+                break
+
+        clock.tick(60)
+
+
 class Game:
     _INSTANCE = None
 
@@ -21,139 +156,29 @@ class Game:
         if not hasattr(self, '_initialized'):
             self._initialized = True
 
-    @staticmethod
-    def __process_manual_events():
-        key = pygame.key.get_pressed()
-        if key[pygame.K_UP]:
-            Components.set_key(pygame.K_UP)
-        elif key[pygame.K_DOWN]:
-            Components.set_key(pygame.K_DOWN)
-        elif key[pygame.K_LEFT]:
-            Components.set_key(pygame.K_LEFT)
-        elif key[pygame.K_RIGHT]:
-            Components.set_key(pygame.K_RIGHT)
-        elif key[pygame.K_ESCAPE]:
-            Components.set_key(pygame.K_ESCAPE)
-
-    @staticmethod
-    def __plot(scores, mean_scores, filename='./model/plot.png'):
-        plt.clf()
-        plt.title('Training...')
-        plt.xlabel('Number of Games')
-        plt.ylabel('Score')
-        plt.plot(scores, label='Scores')
-        plt.plot(mean_scores, label='Mean Scores')
-        plt.ylim(ymin=0)
-        plt.text(len(scores) - 1, scores[-1], str(scores[-1]))
-        plt.text(len(mean_scores) - 1, mean_scores[-1], str(mean_scores[-1]))
-        plt.legend()
-        plt.savefig(filename)
-
-    @staticmethod
-    def __reset_game():
-        Screen().start_game()
-        Snake().start_snake()
-        Components().set_key(pygame.K_SPACE)
-        Food().randon_position()
-
-    @staticmethod
-    def __train():
-        plot_scores = []
-        plot_mean_scores = []
-        total_score = 0
-        record = 0
-        agent = Agent()
-        clock = pygame.time.Clock()
-        move_counter = 0
-
-        while True:
-            move_counter += 1
-
-            key = pygame.key.get_pressed()
-            if key[pygame.K_ESCAPE]:
-                break
-
-            if move_counter > 0:
-                move_counter = 0
-
-                state_old = agent.get_state()
-                final_move = agent.get_action(state_old)
-
-                reward, done, score = Components.train(final_move, 'train')
-
-                state_new = agent.get_state()
-                agent.train_short_memory(state_old, final_move, reward, state_new, done)
-                agent.remember(state_old, final_move, reward, state_new, done)
-
-                if done:
-                    Game.__reset_game()
-                    agent.n_games += 1
-                    agent.train_long_memory()
-                    if score > record:
-                        record = score
-                        agent.model.save()
-
-                    print('Game', agent.n_games, 'Score', score, 'Record:', record)
-
-                    plot_scores.append(score)
-                    total_score += score
-                    mean_score = total_score / agent.n_games
-                    plot_mean_scores.append(mean_score)
-                    Game.__plot(plot_scores, plot_mean_scores)
-
-            clock.tick(60)
-
-    @staticmethod
-    def __manual_game():
-        clock = pygame.time.Clock()
-
-        while Screen().get_state():
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    Screen.end_game()
-                    return
-
-            Game().__process_manual_events()
-
-            Components.process()
-            Components.update()
-            Components.generate()
-
-            clock.tick(60)
-
-    @staticmethod
-    def __ia():
-        agent = Agent()
-        clock = pygame.time.Clock()
-        move_counter = 0
-
-        while True:
-            move_counter += 1
-
-            key = pygame.key.get_pressed()
-            if key[pygame.K_ESCAPE]:
-                break
-
-            if move_counter > Snake().get_snake_speed():
-                move_counter = 0
-
-                state_old = agent.get_state()
-                final_move = agent.get_action(state_old)
-
-                _, done, _ = Components.train(final_move)
-
-                if done:
-                    break
-
-            clock.tick(60)
+    # @staticmethod
+    # def monte_carlo():
+    #     clock = pygame.time.Clock()
+    #
+    #     while True:
+    #         # Exemplo de uso
+    #
+    #         snake_state = SnakeState(Snake(), Food(), Screen.get_screen_width(), Screen.get_screen_height())
+    #         root = SnakeMCTSNode(state=snake_state)
+    #
+    #         # Simulações MCTS
+    #         for _ in range(100):  # Ajuste o número de simulações conforme necessário
+    #             node = root.best_action(simulations_number=1000)
+    #
+    #         best_action = node.parent_action  # Melhor ação selecionada
+    #
+    #         clock.tick(60)
 
     @staticmethod
     def game_loop(mode):
-        Game.__reset_game()
-
         if mode == 'manual':
-            Game.__manual_game()
+            manual_game()
         elif mode == 'ia':
-            Game.__ia()
+            ia()
         else:
-            Game.__train()
+            train()

@@ -5,8 +5,6 @@ import numpy as np
 import pygame
 
 from snake.components.Screen import Screen
-from snake.actors.Snake import Snake
-from snake.actors.Food import Food
 
 
 class Direction(Enum):
@@ -25,80 +23,65 @@ direction_map = {
 
 
 class Components:
-    _INSTANCE = None
-    _components = None
     __move_counter = 0
     __key = pygame.K_SPACE
     _ate = False
 
-    def __new__(cls, *args, **kwargs):
-        if cls._INSTANCE is None:
-            cls._INSTANCE = super(Components, cls).__new__(cls, *args, **kwargs)
-        return cls._INSTANCE
-
     def __init__(self):
-        if not hasattr(self, '_initialized'):
-            self._initialized = True
+        # Não tem parâmetros
+        pass
 
-    @staticmethod
-    def process():
-        Components.__move_counter += 1
+    def process(self, snake, food):
+        self.__move_counter += 1
 
-        Components.__process_key()
+        self.__process_key(snake)
 
-        if Components.__move_counter > Snake().get_snake_speed():
-            Snake().move_snake()
-            Components.__move_counter = 0
+        if self.__move_counter > snake.get_snake_speed():
+            snake.move_snake()
+            self.__move_counter = 0
 
-        Components.__feeding_snake()
+        self.__feeding_snake(snake, food)
 
-    @staticmethod
-    def __process_key():
-        key_pressed = Components.__key
-        if key_pressed == pygame.K_UP and Snake().get_snake_direction() != (0, Screen.get_pixel_size()):
-            Snake().set_snake_direction((0, -Screen.get_pixel_size()))
-        if key_pressed == pygame.K_DOWN and Snake().get_snake_direction() != (0, -Screen.get_pixel_size()):
-            Snake().set_snake_direction((0, Screen.get_pixel_size()))
-        if key_pressed == pygame.K_LEFT and Snake().get_snake_direction() != (Screen.get_pixel_size(), 0):
-            Snake().set_snake_direction((-Screen.get_pixel_size(), 0))
-        if key_pressed == pygame.K_RIGHT and Snake().get_snake_direction() != (-Screen.get_pixel_size(), 0):
-            Snake().set_snake_direction((Screen.get_pixel_size(), 0))
+    def __process_key(self, snake):
+        key_pressed = self.__key
+        if key_pressed == pygame.K_UP and snake.get_snake_direction() != (0, Screen.get_pixel_size()):
+            snake.set_snake_direction((0, -Screen.get_pixel_size()))
+        if key_pressed == pygame.K_DOWN and snake.get_snake_direction() != (0, -Screen.get_pixel_size()):
+            snake.set_snake_direction((0, Screen.get_pixel_size()))
+        if key_pressed == pygame.K_LEFT and snake.get_snake_direction() != (Screen.get_pixel_size(), 0):
+            snake.set_snake_direction((-Screen.get_pixel_size(), 0))
+        if key_pressed == pygame.K_RIGHT and snake.get_snake_direction() != (-Screen.get_pixel_size(), 0):
+            snake.set_snake_direction((Screen.get_pixel_size(), 0))
         if key_pressed == pygame.K_ESCAPE:
             Screen.end_game()
 
-    @staticmethod
-    def set_key(key):
-        Components.__key = key
+    def set_key(self, key):
+        self.__key = key
 
-    @staticmethod
-    def __feeding_snake():
-        if Snake().get_snake_head_position() == Food().get_position():
-            Components._ate = True
+    def __feeding_snake(self, snake, food):
+        if snake.get_snake_head_position() == food.get_position():
+            self._ate = True
 
-    @staticmethod
-    def update():
-        if Components._ate:
-            Snake().grow_snake()
-            Food().randon_position()
-            Components._ate = False
-            Components.set_key(direction_map[Snake.get_snake_direction()])
+    def update(self, snake, food):
+        if self._ate:
+            snake.grow_snake()
+            food.randon_position()
+            self._ate = False
+            self.set_key(direction_map[snake.get_snake_direction()])
 
-    @staticmethod
-    def generate():
-        Components.__draw_components()
+    def generate(self, snake, food):
+        self.__draw_components(snake, food)
         Screen.flip_display()
 
-    @staticmethod
-    def __draw_components():
-        Screen.draw_food(Food().get_food_pixel())
-        for i, part in enumerate(Snake().get_snake_body()):
-            if len(Snake().get_snake_body()) == 1:
+    def __draw_components(self, snake, food):
+        Screen.draw_food(food.get_food_pixel())
+        for i, part in enumerate(snake.get_snake_body()):
+            if len(snake.get_snake_body()) == 1:
                 Screen.draw_snake(part, 0.5)
             else:
-                Screen.draw_snake(part, i / len(Snake().get_snake_body()))
+                Screen.draw_snake(part, i / len(snake.get_snake_body()))
 
-    @staticmethod
-    def __get_key(action):
+    def __get_key(self, action):
         clock_wise = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
 
         key_mapping = {
@@ -108,7 +91,7 @@ class Components:
             pygame.K_UP: Direction.UP
         }
 
-        key = key_mapping.get(Components.__key, None)
+        key = key_mapping.get(self.__key, None)
 
         if key is None:
             key = random.choice(clock_wise)
@@ -125,23 +108,22 @@ class Components:
 
         return new_dir.value
 
-    @staticmethod
-    def train(action, mode='ia'):
-        Components.set_key(Components.__get_key(action))
-        Components.__process_key()
-        Snake().move_snake_whitout_colision()
-        Components.__feeding_snake()
+    def train(self, snake, food, action, mode='ia',):
+        self.set_key(self.__get_key(action))
+        self.__process_key(snake)
+        snake.move_snake_whitout_colision()
+        self.__feeding_snake(snake, food)
 
-        if ((Snake().snake_collide_with_border() or Snake().collide_without_head(Snake().get_snake_head_position()))
-                or (mode == 'train' and Snake().get_train_it() >
-                    10 * Snake().get_snake_size() * (Screen().get_screen_width() // Screen.get_pixel_size()))):
-            return -10, True, Snake().get_score()
+        if ((snake.snake_collide_with_border() or snake.collide_without_head(snake.get_snake_head_position()))
+                or (mode == 'train' and snake.get_train_it() >
+                    10 * snake.get_snake_size() * (Screen().get_screen_width() // Screen.get_pixel_size()))):
+            return -10, True, snake.get_score()
 
         reward = 0
-        if Components._ate:
+        if self._ate:
             reward = 10
 
-        Components.update()
-        Components.generate()
+        self.update(snake, food)
+        self.generate(snake, food)
 
-        return reward, False, Snake().get_score()
+        return reward, False, snake.get_score()
