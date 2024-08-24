@@ -2,10 +2,10 @@ import pygame
 
 
 class Screen:
-    # 18, 20, 30, 36, 50
-    __SCREEN_WIDTH = 900
-    __SCREEN_HEIGHT = 900
-    __PIXEL_SIZE = 50
+    # 20, 26, 30, 52
+    __SCREEN_WIDTH = 780
+    __SCREEN_HEIGHT = 780
+    __PIXEL_SIZE = 20
     __SCREEN = None
     __running = True
     _INSTANCE = None

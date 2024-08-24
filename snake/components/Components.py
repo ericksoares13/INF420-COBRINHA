@@ -126,7 +126,7 @@ class Components:
         return new_dir.value
 
     @staticmethod
-    def train(action):
+    def train(action, mode='ia'):
         game_over = False
 
         Components.set_key(Components.__get_key(action))
@@ -135,7 +135,8 @@ class Components:
         Components.__feeding_snake()
 
         if ((Snake().snake_collide_with_border() or Snake().collide_without_head(Snake().get_snake_head_position()))
-                or Snake().get_train_it() > 100 * Snake().get_snake_size()):
+                or (mode == 'train' and Snake().get_train_it() >
+                    100 * Snake().get_snake_size() * (Screen().get_screen_width() // Screen.get_pixel_size()))):
             game_over = True
 
         reward = 0

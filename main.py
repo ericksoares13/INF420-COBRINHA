@@ -5,7 +5,7 @@ from snake.Game import Game
 pygame.init()
 clock = pygame.time.Clock()
 
-screen = pygame.display.set_mode((900, 900))
+screen = pygame.display.set_mode((780, 780))
 pygame.display.set_caption("Escolha o modo de jogo")
 
 
@@ -44,7 +44,10 @@ def main_menu():
         if draw_button("Manual", 300, 300, 200, 50, (0, 0, 255), (0, 255, 0), lambda: Game.game_loop("manual")):
             screen.fill((255, 255, 255))
 
-        if draw_button("Train", 300, 400, 200, 50, (0, 0, 255), (0, 255, 0), lambda: Game.game_loop("train")):
+        if draw_button("IA", 300, 400, 200, 50, (0, 0, 255), (0, 255, 0), lambda: Game.game_loop("ia")):
+            screen.fill((255, 255, 255))
+
+        if draw_button("Train", 300, 500, 200, 50, (0, 0, 255), (0, 255, 0), lambda: Game.game_loop("train")):
             screen.fill((255, 255, 255))
 
         key = pygame.key.get_pressed()

@@ -24,6 +24,7 @@ class Snake:
             x_position = (Screen().get_screen_width() // (Screen.get_pixel_size() * 2)) * Screen().get_pixel_size()
             y_position = (Screen().get_screen_height() // (Screen.get_pixel_size() * 2)) * Screen().get_pixel_size()
             Snake.__snake_head.center = (x_position, y_position)
+            Snake.__snake_tail = Snake.__snake_head.copy()
             Snake.__snake_body = [Snake.__snake_head.copy()]
             self._initialized = True
 
@@ -42,6 +43,19 @@ class Snake:
     @staticmethod
     def get_snake_head_position():
         return Snake.__snake_head.center
+
+    @staticmethod
+    def get_snake_tail_position():
+        return Snake.__snake_tail.center
+
+    @staticmethod
+    def get_snake_tail_direction():
+        if Snake.get_snake_size() == 1:
+            x, y = Snake.__snake_direction
+            return -1 * x, -1 * y
+        last = Snake.__snake_body[0]
+        second_last = Snake.__snake_body[1]
+        return last[0] - second_last[0], last[1] - second_last[1]
 
     @staticmethod
     def get_snake_direction():

@@ -73,13 +73,13 @@ class Game:
             if key[pygame.K_ESCAPE]:
                 break
 
-            if move_counter > Snake().get_snake_speed():
+            if move_counter > 0:
                 move_counter = 0
 
                 state_old = agent.get_state()
                 final_move = agent.get_action(state_old)
 
-                reward, done, score = Components.train(final_move)
+                reward, done, score = Components.train(final_move, 'train')
 
                 state_new = agent.get_state()
                 agent.train_short_memory(state_old, final_move, reward, state_new, done)
@@ -122,10 +122,38 @@ class Game:
             clock.tick(60)
 
     @staticmethod
+    def __ia():
+        agent = Agent()
+        clock = pygame.time.Clock()
+        move_counter = 0
+
+        while True:
+            move_counter += 1
+
+            key = pygame.key.get_pressed()
+            if key[pygame.K_ESCAPE]:
+                break
+
+            if move_counter > Snake().get_snake_speed():
+                move_counter = 0
+
+                state_old = agent.get_state()
+                final_move = agent.get_action(state_old)
+
+                _, done, _ = Components.train(final_move)
+
+                if done:
+                    break
+
+            clock.tick(60)
+
+    @staticmethod
     def game_loop(mode):
         Game.__reset_game()
 
         if mode == 'manual':
             Game.__manual_game()
+        elif mode == 'ia':
+            Game.__ia()
         else:
             Game.__train()
