@@ -1,6 +1,6 @@
 import pygame
 
-from components.Screen import Screen
+from snake.components.Screen import Screen
 
 
 class Snake:
@@ -10,6 +10,8 @@ class Snake:
     __snake_body = None
     __snake_head = None
     __snake_tail = None
+    __train_it = 0
+    __score = 0
 
     def __new__(cls, *args, **kwargs):
         if cls._INSTANCE is None:
@@ -46,6 +48,14 @@ class Snake:
         return Snake.__snake_direction
 
     @staticmethod
+    def get_score():
+        return Snake.__score
+
+    @staticmethod
+    def get_train_it():
+        return Snake.__train_it
+
+    @staticmethod
     def set_snake_direction(new_direction):
         Snake.__snake_direction = new_direction
 
@@ -56,6 +66,7 @@ class Snake:
         Snake.__snake_body = Snake.__snake_body[::-1]
         Snake.__change_direction()
         Snake.__update_velocity()
+        Snake.__score += 1
 
     @staticmethod
     def __change_direction():
@@ -73,15 +84,20 @@ class Snake:
 
     @staticmethod
     def move_snake():
+        Snake.move_snake_whitout_colision()
+
+        if Snake().collide_without_head(Snake().get_snake_head_position()):
+            Screen().end_game()
+        if Snake().snake_collide_with_border():
+            Screen().end_game()
+
+    @staticmethod
+    def move_snake_whitout_colision():
         Snake.__snake_head.move_ip(Snake.__snake_direction)
         Snake.__snake_body.append(Snake.__snake_head.copy())
         Snake.__snake_tail = Snake.__snake_body[0]
         Snake.__snake_body.pop(0)
-
-        if Snake().collide_without_head(Snake().get_snake_head_position()):
-            Screen().end_game()
-        if Snake().collide_with_border():
-            Screen().end_game()
+        Snake.__train_it += 1
 
     @staticmethod
     def collide_any_part(pos):
@@ -95,8 +111,12 @@ class Snake:
         return False
 
     @staticmethod
-    def collide_with_border():
-        x, y = Snake().get_snake_head_position()
+    def snake_collide_with_border():
+        return Snake.collide_with_border(Snake().get_snake_head_position())
+
+    @staticmethod
+    def collide_with_border(pos):
+        x, y = pos
         if x < Screen().get_pixel_size():
             return True
         if y < Screen().get_pixel_size():
@@ -106,3 +126,14 @@ class Snake:
         if y > Screen().get_screen_height() - Screen().get_pixel_size():
             return True
         return False
+
+    @staticmethod
+    def start_snake():
+        Snake.__snake_head = pygame.rect.Rect(0, 0, Screen().get_pixel_size(), Screen().get_pixel_size())
+        x_position = (Screen().get_screen_width() // (Screen.get_pixel_size() * 2)) * Screen().get_pixel_size()
+        y_position = (Screen().get_screen_height() // (Screen.get_pixel_size() * 2)) * Screen().get_pixel_size()
+        Snake.__snake_head.center = (x_position, y_position)
+        Snake.__snake_body = [Snake.__snake_head.copy()]
+        Snake.__snake_direction = (0, 0)
+        Snake.__train_it = 0
+        Snake.__score = 0

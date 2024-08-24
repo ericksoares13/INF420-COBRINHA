@@ -1,0 +1,6 @@
+pygame~=2.6.0
+torch==2.3.0
+torchvision==0.18.0
+torchaudio==2.3.0
+matplotlib~=3.9.2
+numpy~=2.1.0

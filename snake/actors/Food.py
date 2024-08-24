@@ -2,8 +2,8 @@ import random
 
 import pygame
 
-from actors.Snake import Snake
-from components.Screen import Screen
+from snake.actors.Snake import Snake
+from snake.components.Screen import Screen
 
 
 class Food:

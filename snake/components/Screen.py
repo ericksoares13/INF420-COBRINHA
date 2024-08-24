@@ -77,3 +77,7 @@ class Screen:
     @staticmethod
     def end_game():
         Screen.__running = False
+
+    @staticmethod
+    def start_game():
+        Screen.__running = True
