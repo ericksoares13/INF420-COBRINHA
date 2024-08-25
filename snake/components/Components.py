@@ -64,7 +64,6 @@ class Components:
 
     def update(self, snake, food):
         if self._ate:
-            print("Tamanho:", snake.get_snake_size())
             snake.grow_snake()
             food.randon_position()
             self._ate = False

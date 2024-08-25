@@ -30,7 +30,7 @@ class Food:
         return self.__food
 
     def get_position(self):
-        return self.__food.center
+        return self.__food.topleft
 
     def get_food_pixel(self):
         return self.__food

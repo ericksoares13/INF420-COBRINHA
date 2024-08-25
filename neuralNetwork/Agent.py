@@ -94,7 +94,6 @@ class Agent:
     def collide(self, point, direction=True):
         if not direction:
             return False
-        point = point[0] - (Screen.get_pixel_size() // 2), point[1] - (Screen.get_pixel_size() // 2)
         return collide_with_border(point) or self.snake.collide_without_head(point)
 
     def collide_snake(self, dist, direction):
@@ -102,8 +101,6 @@ class Agent:
             return False
 
         x, y = self.snake.get_snake_head_position()
-        x -= (Screen.get_pixel_size() // 2)
-        y -= (Screen.get_pixel_size() // 2)
         while 0 < x < Screen.get_screen_width() and 0 < y < Screen.get_screen_height():
             x += dist[0]
             y += dist[1]
