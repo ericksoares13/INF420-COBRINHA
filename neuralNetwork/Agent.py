@@ -1,6 +1,7 @@
 import torch
 import random
 import numpy as np
+import math
 from collections import deque
 from neuralNetwork.NeuralNetwork import LinearQNet, QTrainer
 
@@ -19,7 +20,7 @@ class Agent:
         self.epsilon = 0
         self.gamma = 0.9
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = LinearQNet(15, 256, 3)
+        self.model = LinearQNet(16, 256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
         self._load_model()
         self.snake = snake
@@ -51,6 +52,8 @@ class Agent:
         tail_x, tail_y = self.snake.get_snake_tail_position()
         dir_tail_x, dir_tail_y = self.snake.get_snake_tail_direction()
         new_tail = tail_x + dir_tail_x, tail_y + dir_tail_y
+
+        distance_to_food = math.sqrt((head_x - food_x) ** 2 + (head_y - food_y) ** 2)
 
         state = [
             self.collide(point_r, dir_r) or self.collide(point_l, dir_l)
@@ -87,7 +90,9 @@ class Agent:
             food_y < head_y,
             food_y > head_y,
 
-            self.collide(new_tail)
+            self.collide(new_tail),
+
+            distance_to_food / (Screen.get_screen_width() + Screen.get_screen_height())
         ]
         return np.array(state, dtype=int)
 
@@ -100,16 +105,18 @@ class Agent:
         if not direction:
             return False
 
+        total = 0
         x, y = self.snake.get_snake_head_position()
         while 0 < x < Screen.get_screen_width() and 0 < y < Screen.get_screen_height():
+            total += 1
             x += dist[0]
             y += dist[1]
 
             for segment in self.snake.get_snake_body():
                 if (x, y) == segment.topleft:
-                    return True
+                    return total
 
-        return False
+        return 0
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
