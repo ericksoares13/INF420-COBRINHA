@@ -64,6 +64,7 @@ class Components:
 
     def update(self, snake, food):
         if self._ate:
+            print("Tamanho:", snake.get_snake_size())
             snake.grow_snake()
             food.randon_position()
             self._ate = False
@@ -108,7 +109,7 @@ class Components:
 
         return new_dir.value
 
-    def train(self, snake, food, action, mode='ia',):
+    def train(self, snake, food, action, mode='ia'):
         self.set_key(self.__get_key(action))
         self.__process_key(snake)
         snake.move_snake_whitout_colision()
@@ -127,3 +128,8 @@ class Components:
         self.generate(snake, food)
 
         return reward, False, snake.get_score()
+
+    def monte_carlo(self, snake, food):
+        self.__feeding_snake(snake, food)
+        self.update(snake, food)
+        self.generate(snake, food)

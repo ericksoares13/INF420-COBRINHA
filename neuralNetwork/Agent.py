@@ -4,8 +4,7 @@ import numpy as np
 from collections import deque
 from neuralNetwork.NeuralNetwork import LinearQNet, QTrainer
 
-from snake.actors.Food import Food
-from snake.actors.Snake import Snake, collide_with_border
+from snake.actors.Snake import collide_with_border
 from snake.components.Screen import Screen
 
 MAX_MEMORY = 100_000

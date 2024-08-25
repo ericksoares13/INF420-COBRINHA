@@ -2,7 +2,6 @@ import random
 
 import pygame
 
-from snake.actors.Snake import Snake
 from snake.components.Screen import Screen
 
 
@@ -11,8 +10,9 @@ class Food:
     __x = None
     __y = None
 
-    def __init__(self):
+    def __init__(self, snake):
         self.__food = pygame.rect.Rect(0, 0, Screen().get_pixel_size(), Screen().get_pixel_size())
+        self.snake = snake
         self.randon_position()
 
     def randon_position(self):
@@ -20,9 +20,11 @@ class Food:
         while True:
             self.__x = random.randint(1, (Screen.get_screen_width() - pixel_size) // pixel_size)
             self.__y = random.randint(1, (Screen.get_screen_height() - pixel_size) // pixel_size)
+            self.__x = self.__x * pixel_size
+            self.__y = self.__y * pixel_size
 
-            if not Snake().collide_any_part((self.__x * pixel_size, self.__y * pixel_size)):
-                self.__food.center = (self.__x * pixel_size, self.__y * pixel_size)
+            if not self.snake.collide_any_part((self.__x, self.__y)):
+                self.__food.center = (self.__x, self.__y)
                 break
 
         return self.__food

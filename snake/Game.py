@@ -1,5 +1,6 @@
 import pygame
 
+from monteCarlo.MonteCarlo import MonteCarlo
 from neuralNetwork.Agent import Agent
 from snake.actors.Food import Food
 from snake.actors.Snake import Snake
@@ -26,7 +27,7 @@ def process_manual_events(component):
 def manual_game():
     component = Components()
     snake = Snake()
-    food = Food()
+    food = Food(snake)
     clock = pygame.time.Clock()
 
     while Screen().get_state():
@@ -72,7 +73,7 @@ def train():
     record = 0
     component = Components()
     snake = Snake()
-    food = Food()
+    food = Food(snake)
     agent = Agent(snake, food)
     clock = pygame.time.Clock()
     move_counter = 0
@@ -118,7 +119,7 @@ def train():
 def ia():
     component = Components()
     snake = Snake()
-    food = Food()
+    food = Food(snake)
     agent = Agent(snake, food)
     clock = pygame.time.Clock()
     move_counter = 0
@@ -144,6 +145,36 @@ def ia():
         clock.tick(60)
 
 
+def monte_carlo():
+    component = Components()
+    snake = Snake()
+    food = Food(snake)
+    monte_carlo_agent = MonteCarlo(component, snake, food)
+    clock = pygame.time.Clock()
+    move_counter = 0
+
+    while Screen().get_state():
+        move_counter += 1
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                Screen.end_game()
+                return
+
+        key = pygame.key.get_pressed()
+        if key[pygame.K_ESCAPE]:
+            break
+
+        if move_counter > 0:
+            move_counter = 0
+
+            monte_carlo_agent.agente()
+
+            component.monte_carlo(snake, food)
+
+        clock.tick(60)
+
+
 class Game:
     _INSTANCE = None
 
@@ -156,29 +187,13 @@ class Game:
         if not hasattr(self, '_initialized'):
             self._initialized = True
 
-    # @staticmethod
-    # def monte_carlo():
-    #     clock = pygame.time.Clock()
-    #
-    #     while True:
-    #         # Exemplo de uso
-    #
-    #         snake_state = SnakeState(Snake(), Food(), Screen.get_screen_width(), Screen.get_screen_height())
-    #         root = SnakeMCTSNode(state=snake_state)
-    #
-    #         # Simulações MCTS
-    #         for _ in range(100):  # Ajuste o número de simulações conforme necessário
-    #             node = root.best_action(simulations_number=1000)
-    #
-    #         best_action = node.parent_action  # Melhor ação selecionada
-    #
-    #         clock.tick(60)
-
     @staticmethod
     def game_loop(mode):
         if mode == 'manual':
             manual_game()
         elif mode == 'ia':
             ia()
+        elif mode == 'monteCarlo':
+            monte_carlo()
         else:
             train()

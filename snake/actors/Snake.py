@@ -9,9 +9,9 @@ def collide_with_border(pos):
         return True
     if y < Screen().get_pixel_size() // 2:
         return True
-    if x > Screen().get_screen_width() - (Screen().get_pixel_size() // 2):
+    if x >= Screen().get_screen_width() - (Screen().get_pixel_size() // 2):
         return True
-    if y > Screen().get_screen_height() - (Screen().get_pixel_size() // 2):
+    if y >= Screen().get_screen_height() - (Screen().get_pixel_size() // 2):
         return True
     return False
 
@@ -76,6 +76,9 @@ class Snake:
         self.__update_velocity()
         self.__score += 1
 
+    def update_score(self):
+        self.__score += 1
+
     def __change_direction(self):
         last = self.__snake_body[-1]
         second_last = self.__snake_body[-2]
@@ -91,7 +94,10 @@ class Snake:
     def move_snake(self):
         self.move_snake_whitout_colision()
 
-        if self.collide_without_head(self.get_snake_head_position()):
+        x, y = self.get_snake_head_position()
+        x -= Screen().get_pixel_size() // 2
+        y -= Screen().get_pixel_size() // 2
+        if self.collide_without_head((x, y)):
             Screen().end_game()
         if self.snake_collide_with_border():
             Screen().end_game()
@@ -104,7 +110,8 @@ class Snake:
         self.__train_it += 1
 
     def collide_any_part(self, pos):
-        return self.get_snake_head_position() == pos or self.collide_without_head(pos)
+        aux = Screen.get_pixel_size() // 2
+        return self.get_snake_head_position() == pos or self.collide_without_head((pos[0] - aux, pos[1] - aux))
 
     def collide_without_head(self, pos):
         for part in self.__snake_body[:-1]:
