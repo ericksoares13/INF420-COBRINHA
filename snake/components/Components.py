@@ -76,11 +76,14 @@ class Components:
 
     def __draw_components(self, snake, food):
         Screen.draw_food(food.get_food_pixel())
-        for i, part in enumerate(snake.get_snake_body()):
+        snake_body = snake.get_snake_body()
+        for i, part in enumerate(snake_body):
             if len(snake.get_snake_body()) == 1:
-                Screen.draw_snake(part, 0.5)
+                Screen.draw_snake(part, 0.5, snake_body[i-1] if i > 0 else None,
+                                  snake_body[i+1] if i < len(snake_body) - 1 else None)
             else:
-                Screen.draw_snake(part, i / len(snake.get_snake_body()))
+                Screen.draw_snake(part, i / len(snake.get_snake_body()), snake_body[i-1] if i > 0 else None,
+                                  snake_body[i+1] if i < len(snake_body) - 1 else None)
 
     def __get_key(self, action):
         clock_wise = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
