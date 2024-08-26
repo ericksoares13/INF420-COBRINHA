@@ -189,6 +189,7 @@ class Game:
 
     @staticmethod
     def game_loop(mode):
+        Screen().start_game()
         if mode == 'manual':
             manual_game()
         elif mode == 'ia':

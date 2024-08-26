@@ -10,6 +10,9 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((780, 780))
 pygame.display.set_caption("Escolha o modo de jogo")
 
+font_path = "Font/PressStart2P-Regular.ttf"
+game_font = pygame.font.Font(font_path, 25)
+title_font = pygame.font.Font(font_path, 40)
 
 def draw_text(text, font, color, surface, x, y):
     text_obj = font.render(text, True, color)
@@ -26,9 +29,10 @@ def draw_button(label, x, y, width, height, active_color, inactive_color, action
         if click[0] == 1 and action:
             action()
             return True
+    else:
+        pygame.draw.rect(screen, inactive_color, (x, y, width, height))
 
-    draw_text(label, pygame.font.Font(None, 70), (0, 0, 0), screen, x + width // 2, y + height // 2)
-
+    draw_text(label, game_font, (0, 0, 0), screen, x + width // 2, y + height // 2)
     return False
 
 def load_and_blur_video(video_path):
@@ -78,20 +82,25 @@ def main_menu():
             background = process_frame(cap)
             screen.blit(background, (0, 0))
 
-        if draw_button("Manual", 190, 235, 400, 60,
-                       pygame.Color("green"), pygame.Color("purple"), lambda: Game.game_loop("manual")):
+        draw_text("JOGO DA COBRINHA", title_font, (0, 0, 0), screen, 390, 85)
+
+        light_blue = pygame.Color(173, 216, 230)
+        navy_blue = pygame.Color(60, 105, 170)
+
+        if draw_button("Manual", 190, 220, 420, 60,
+                       navy_blue, light_blue, lambda: Game.game_loop("manual")):
             screen.fill((255, 255, 255))
 
-        if draw_button("Deep Q-Learning", 190, 335, 400, 60,
-                       pygame.Color("green"), pygame.Color("purple"), lambda: Game.game_loop("ia")):
+        if draw_button("Deep Q-Learning", 190, 332, 420, 60,
+                       navy_blue, light_blue, lambda: Game.game_loop("ia")):
             screen.fill((255, 255, 255))
 
-        if draw_button("Monte Carlo", 190, 435, 400, 60,
-                       pygame.Color("green"), pygame.Color("purple"), lambda: Game.game_loop("monteCarlo")):
+        if draw_button("Monte Carlo", 190, 444, 420, 60,
+                       navy_blue, light_blue, lambda: Game.game_loop("monteCarlo")):
             screen.fill((255, 255, 255))
 
-        if draw_button("Training", 190, 535, 400, 60,
-                       pygame.Color("green"), pygame.Color("purple"), lambda: Game.game_loop("train")):
+        if draw_button("Training", 190, 556, 420, 60,
+                       navy_blue, light_blue, lambda: Game.game_loop("train")):
             screen.fill((255, 255, 255))
 
         key = pygame.key.get_pressed()
