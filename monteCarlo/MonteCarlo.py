@@ -1,6 +1,5 @@
 import random
 import copy
-
 import numpy as np
 
 from snake.components.Screen import Screen
@@ -23,26 +22,31 @@ class MonteCarlo:
             if self.movimento_valido(direcao):
                 pontuacoes[direcao] = self.simular_jogo(direcao, simulacoes)
 
-        if not pontuacoes:
-            return random.choice(direcoes_possiveis)
+        if pontuacoes:
+            melhor_direcao = max(pontuacoes, key=pontuacoes.get)
+        else:
+            melhor_direcao = random.choice(direcoes_possiveis)
 
-        if all(pontuacao == list(pontuacoes.values())[0] for pontuacao in pontuacoes.values()):
-            return random.choice(list(pontuacoes.keys()))
-
-        melhor_direcao = max(pontuacoes, key=pontuacoes.get)
         return melhor_direcao
 
     def simular_jogo(self, direcao, simulacoes=40):
         pontuacoes = []
+
         for _ in range(simulacoes):
             copia_jogo = copy.deepcopy(self)
             copia_jogo.snake.set_snake_direction(direcao)
             copia_jogo.snake.move_snake_whitout_colision()
             comidas = 0
-            movimentos = 0
+            movimentos = 1
 
-            while movimentos < copia_jogo.snake.get_snake_size() * Screen().get_pixel_size():
-                possiveis = copy.deepcopy(direcoes_possiveis)  # Copia as direções possíveis
+            if copia_jogo.snake.get_snake_head_position() == copia_jogo.food.get_position():
+                copia_jogo.snake.grow_snake()
+                copia_jogo.food.randon_position()
+                comidas += 1
+
+            while (movimentos < copia_jogo.snake.get_snake_size() *
+                   (Screen().get_screen_width() // Screen().get_pixel_size())):
+                possiveis = copy.deepcopy(direcoes_possiveis)
                 while possiveis:
                     direcao_aleatoria = random.choice(possiveis)
 
@@ -66,14 +70,14 @@ class MonteCarlo:
             tamanho_cobra = int(copia_jogo.snake.get_snake_size())
             expoente = tamanho_cobra * 0.25
 
-            pontuacao = comidas * (movimentos ** expoente)
+            pontuacao = (comidas + 1) * (movimentos ** expoente)
             pontuacoes.append(pontuacao)
 
         return np.mean(pontuacoes) if pontuacoes else 0
 
     def movimento_valido(self, direcao):
-        nova_pos = (self.snake.get_snake_head_position()[0] - (Screen.get_pixel_size() // 2) + direcao[0],
-                    self.snake.get_snake_head_position()[1] - (Screen.get_pixel_size() // 2) + direcao[1])
+        nova_pos = (self.snake.get_snake_head_position()[0] - (Screen().get_pixel_size() // 2) + direcao[0],
+                    self.snake.get_snake_head_position()[1] - (Screen().get_pixel_size() // 2) + direcao[1])
         return not (collide_with_border(nova_pos) or self.snake.collide_without_head(nova_pos))
 
     def agente(self):
