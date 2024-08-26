@@ -23,7 +23,11 @@ class MonteCarlo:
                 pontuacoes[direcao] = self.simular_jogo(direcao, simulacoes)
 
         if pontuacoes:
-            melhor_direcao = max(pontuacoes, key=pontuacoes.get)
+            pontuacoes_valores = list(pontuacoes.values())
+            if all(p == pontuacoes_valores[0] for p in pontuacoes_valores):
+                melhor_direcao = random.choice(list(pontuacoes.keys()))
+            else:
+                melhor_direcao = max(pontuacoes, key=pontuacoes.get)
         else:
             melhor_direcao = random.choice(direcoes_possiveis)
 
