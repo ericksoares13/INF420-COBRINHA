@@ -16,7 +16,7 @@ class MonteCarlo:
         self.snake = snake
         self.food = food
 
-    def monte_carlo_agente(self, simulacoes=150):
+    def monte_carlo_agente(self, simulacoes=40):
         pontuacoes = {}
 
         for direcao in direcoes_possiveis:
@@ -32,7 +32,7 @@ class MonteCarlo:
         melhor_direcao = max(pontuacoes, key=pontuacoes.get)
         return melhor_direcao
 
-    def simular_jogo(self, direcao, simulacoes=150):
+    def simular_jogo(self, direcao, simulacoes=40):
         pontuacoes = []
         for _ in range(simulacoes):
             copia_jogo = copy.deepcopy(self)
@@ -41,9 +41,8 @@ class MonteCarlo:
             comidas = 0
             movimentos = 0
 
-            while (movimentos < copia_jogo.snake.get_snake_size() *
-                   (Screen().get_screen_width() // Screen().get_pixel_size())):
-                possiveis = copy.deepcopy(direcoes_possiveis)
+            while movimentos < copia_jogo.snake.get_snake_size() * Screen().get_pixel_size():
+                possiveis = copy.deepcopy(direcoes_possiveis)  # Copia as direções possíveis
                 while possiveis:
                     direcao_aleatoria = random.choice(possiveis)
 
@@ -64,14 +63,17 @@ class MonteCarlo:
                 if not possiveis:
                     break
 
-            pontuacao = comidas * (movimentos ** 6)
+            tamanho_cobra = int(copia_jogo.snake.get_snake_size())
+            expoente = tamanho_cobra * 0.25
+
+            pontuacao = comidas * (movimentos ** expoente)
             pontuacoes.append(pontuacao)
 
         return np.mean(pontuacoes) if pontuacoes else 0
 
     def movimento_valido(self, direcao):
-        nova_pos = (self.snake.get_snake_head_position()[0] + direcao[0],
-                    self.snake.get_snake_head_position()[1] + direcao[1])
+        nova_pos = (self.snake.get_snake_head_position()[0] - (Screen.get_pixel_size() // 2) + direcao[0],
+                    self.snake.get_snake_head_position()[1] - (Screen.get_pixel_size() // 2) + direcao[1])
         return not (collide_with_border(nova_pos) or self.snake.collide_without_head(nova_pos))
 
     def agente(self):

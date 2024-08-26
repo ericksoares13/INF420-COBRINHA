@@ -43,10 +43,10 @@ class Snake:
         return len(self.__snake_body)
 
     def get_snake_head_position(self):
-        return self.__snake_head.topleft
+        return self.__snake_head.center
 
     def get_snake_tail_position(self):
-        return self.__snake_tail.topleft
+        return self.__snake_tail.center
 
     def get_snake_tail_direction(self):
         if self.get_snake_size() == 1:
@@ -94,7 +94,10 @@ class Snake:
     def move_snake(self):
         self.move_snake_whitout_colision()
 
-        if self.collide_without_head(self.get_snake_head_position()):
+        x, y = self.get_snake_head_position()
+        x -= Screen().get_pixel_size() // 2
+        y -= Screen().get_pixel_size() // 2
+        if self.collide_without_head((x, y)):
             Screen().end_game()
         if self.snake_collide_with_border():
             Screen().end_game()
@@ -107,7 +110,8 @@ class Snake:
         self.__train_it += 1
 
     def collide_any_part(self, pos):
-        return self.get_snake_head_position() == pos or self.collide_without_head(pos)
+        aux = Screen.get_pixel_size() // 2
+        return self.get_snake_head_position() == pos or self.collide_without_head((pos[0] - aux, pos[1] - aux))
 
     def collide_without_head(self, pos):
         for part in self.__snake_body[:-1]:
