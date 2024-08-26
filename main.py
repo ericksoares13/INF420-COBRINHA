@@ -1,4 +1,6 @@
 import pygame
+import cv2
+import numpy as np
 
 from snake.Game import Game
 
@@ -24,37 +26,72 @@ def draw_button(label, x, y, width, height, active_color, inactive_color, action
         if click[0] == 1 and action:
             action()
             return True
-    else:
-        pygame.draw.rect(screen, inactive_color, (x, y, width, height))
 
-    draw_text(label, pygame.font.Font(None, 74), (0, 0, 0), screen, x + width // 2, y + height // 2)
+    draw_text(label, pygame.font.Font(None, 70), (0, 0, 0), screen, x + width // 2, y + height // 2)
 
     return False
 
+def load_and_blur_video(video_path):
+    cap = cv2.VideoCapture(video_path)
+
+    if not cap.isOpened():
+        print("Erro ao carregar o vídeo.")
+        return None
+
+    return cap
+
+def process_frame(cap):
+    ret, frame = cap.read()
+
+    if not ret:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+        ret, frame = cap.read()
+
+    # Converte o frame para RGB
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    # Redimensiona o frame para caber na tela do Pygame
+    frame = cv2.resize(frame, (780, 780))
+
+    # Aplica o desfoque (GaussianBlur)
+    frame = cv2.GaussianBlur(frame, (15, 15), 0)
+
+    # Converte o frame para o formato Pygame
+    frame = np.rot90(frame)  # Rotaciona a imagem para se alinhar ao formato do Pygame
+    frame = pygame.surfarray.make_surface(frame)
+
+    return frame
+
 
 def main_menu():
+
+    video_path = "menu/video_menu.mp4"
+    cap = load_and_blur_video(video_path)
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return
 
-        screen.fill((255, 255, 255))
+        if cap:
+            background = process_frame(cap)
+            screen.blit(background, (0, 0))
 
-        if draw_button("Manual", 300, 300, 200, 50,
-                       (0, 0, 255), (0, 255, 0), lambda: Game.game_loop("manual")):
+        if draw_button("Manual", 190, 235, 400, 60,
+                       pygame.Color("green"), pygame.Color("purple"), lambda: Game.game_loop("manual")):
             screen.fill((255, 255, 255))
 
-        if draw_button("IA", 300, 400, 200, 50,
-                       (0, 0, 255), (0, 255, 0), lambda: Game.game_loop("ia")):
+        if draw_button("Deep Q-Learning", 190, 335, 400, 60,
+                       pygame.Color("green"), pygame.Color("purple"), lambda: Game.game_loop("ia")):
             screen.fill((255, 255, 255))
 
-        if draw_button("Monte Carlo", 300, 500, 200, 50,
-                       (0, 0, 255), (0, 255, 0), lambda: Game.game_loop("monteCarlo")):
+        if draw_button("Monte Carlo", 190, 435, 400, 60,
+                       pygame.Color("green"), pygame.Color("purple"), lambda: Game.game_loop("monteCarlo")):
             screen.fill((255, 255, 255))
 
-        if draw_button("Train", 300, 600, 200, 50,
-                       (0, 0, 255), (0, 255, 0), lambda: Game.game_loop("train")):
+        if draw_button("Training", 190, 535, 400, 60,
+                       pygame.Color("green"), pygame.Color("purple"), lambda: Game.game_loop("train")):
             screen.fill((255, 255, 255))
 
         key = pygame.key.get_pressed()
