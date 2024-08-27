@@ -10,7 +10,7 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((780, 780))
 pygame.display.set_caption("Escolha o modo de jogo")
 
-font_path = "Font/PressStart2P-Regular.ttf"
+font_path = "font/PressStart2P-Regular.ttf"
 game_font = pygame.font.Font(font_path, 25)
 title_font = pygame.font.Font(font_path, 40)
 
@@ -57,8 +57,6 @@ def process_frame(cap):
     # Redimensiona o frame para caber na tela do Pygame
     frame = cv2.resize(frame, (780, 780))
 
-    # Aplica o desfoque (GaussianBlur)
-    frame = cv2.GaussianBlur(frame, (15, 15), 0)
 
     # Converte o frame para o formato Pygame
     frame = np.rot90(frame)  # Rotaciona a imagem para se alinhar ao formato do Pygame
@@ -68,38 +66,38 @@ def process_frame(cap):
 
 
 def main_menu():
-
-    video_path = "menu/video_menu.mp4"
+    video_path = "menu/menu_video.mp4"
     cap = load_and_blur_video(video_path)
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return
 
         if cap:
             background = process_frame(cap)
             screen.blit(background, (0, 0))
 
-        draw_text("JOGO DA COBRINHA", title_font, (0, 0, 0), screen, 390, 85)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+
+        draw_text("JOGO DA COBRINHA", title_font, (0, 0, 0), screen, 390, 108)
 
         light_blue = pygame.Color(173, 216, 230)
-        navy_blue = pygame.Color(60, 105, 170)
+        navy_blue = pygame.Color("#afa9d2")
 
-        if draw_button("Manual", 190, 220, 420, 60,
+        if draw_button("Manual", 182, 227, 416, 60,
                        navy_blue, light_blue, lambda: Game.game_loop("manual")):
             screen.fill((255, 255, 255))
 
-        if draw_button("Deep Q-Learning", 190, 332, 420, 60,
+        if draw_button("Deep Q-Learning", 182, 332, 416, 60,
                        navy_blue, light_blue, lambda: Game.game_loop("ia")):
             screen.fill((255, 255, 255))
 
-        if draw_button("Monte Carlo", 190, 444, 420, 60,
+        if draw_button("Monte Carlo", 182, 436, 416, 60,
                        navy_blue, light_blue, lambda: Game.game_loop("monteCarlo")):
             screen.fill((255, 255, 255))
 
-        if draw_button("Training", 190, 556, 420, 60,
+        if draw_button("Training", 182, 540, 416, 60,
                        navy_blue, light_blue, lambda: Game.game_loop("train")):
             screen.fill((255, 255, 255))
 
