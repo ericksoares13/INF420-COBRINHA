@@ -20,8 +20,6 @@ def process_manual_events(component):
         component.set_key(pygame.K_LEFT)
     elif key[pygame.K_RIGHT]:
         component.set_key(pygame.K_RIGHT)
-    elif key[pygame.K_ESCAPE]:
-        component.set_key(pygame.K_ESCAPE)
 
 
 def manual_game():
@@ -31,10 +29,11 @@ def manual_game():
     clock = pygame.time.Clock()
 
     while Screen().get_state():
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                Screen.end_game()
-                return
+        pygame.event.get()
+        key = pygame.key.get_pressed()
+
+        if key[pygame.K_q]:
+            break
 
         process_manual_events(component)
 
@@ -43,6 +42,63 @@ def manual_game():
         component.generate(snake, food)
 
         clock.tick(60)
+
+    return snake.get_score()
+
+
+def ia():
+    component = Components()
+    snake = Snake()
+    food = Food(snake)
+    agent = Agent(snake, food)
+    clock = pygame.time.Clock()
+    move_counter = 0
+
+    while True:
+        pygame.event.get()
+        key = pygame.key.get_pressed()
+
+        if key[pygame.K_q]:
+            break
+
+        move_counter += 1
+
+        if move_counter > snake.get_snake_speed():
+            move_counter = 0
+
+            state_old = agent.get_state()
+            final_move = agent.get_action(state_old)
+
+            _, done, _ = component.train(snake, food, final_move)
+
+            if done:
+                break
+
+        clock.tick(60)
+
+    return snake.get_score()
+
+
+def monte_carlo():
+    component = Components()
+    snake = Snake()
+    food = Food(snake)
+    monte_carlo_agent = MonteCarlo(component, snake, food)
+    clock = pygame.time.Clock()
+
+    while Screen().get_state():
+        pygame.event.get()
+        key = pygame.key.get_pressed()
+
+        if key[pygame.K_q]:
+            break
+
+        monte_carlo_agent.agente()
+        component.monte_carlo(snake, food)
+
+        clock.tick(60)
+
+    return snake.get_score()
 
 
 def plot(scores, mean_scores, filename='./model/plot.png'):
@@ -76,103 +132,42 @@ def train():
     food = Food(snake)
     agent = Agent(snake, food)
     clock = pygame.time.Clock()
-    move_counter = 0
 
     while True:
-        move_counter += 1
-
+        pygame.event.get()
         key = pygame.key.get_pressed()
-        if key[pygame.K_ESCAPE]:
+
+        if key[pygame.K_q]:
             break
 
-        if move_counter > 0:
-            move_counter = 0
+        state_old = agent.get_state()
+        final_move = agent.get_action(state_old)
 
-            state_old = agent.get_state()
-            final_move = agent.get_action(state_old)
+        reward, done, score = component.train(snake, food, final_move, 'train')
 
-            reward, done, score = component.train(snake, food, final_move, 'train')
+        state_new = agent.get_state()
+        agent.train_short_memory(state_old, final_move, reward, state_new, done)
+        agent.remember(state_old, final_move, reward, state_new, done)
 
-            state_new = agent.get_state()
-            agent.train_short_memory(state_old, final_move, reward, state_new, done)
-            agent.remember(state_old, final_move, reward, state_new, done)
+        if done:
+            reset_game(snake, component, food)
+            agent.n_games += 1
+            agent.train_long_memory()
+            if score > record:
+                record = score
+                agent.model.save()
 
-            if done:
-                reset_game(snake, component, food)
-                agent.n_games += 1
-                agent.train_long_memory()
-                if score > record:
-                    record = score
-                    agent.model.save()
+            print('Game', agent.n_games, 'Score', score, 'Record:', record)
 
-                print('Game', agent.n_games, 'Score', score, 'Record:', record)
-
-                plot_scores.append(score)
-                total_score += score
-                mean_score = total_score / agent.n_games
-                plot_mean_scores.append(mean_score)
-                plot(plot_scores, plot_mean_scores)
+            plot_scores.append(score)
+            total_score += score
+            mean_score = total_score / agent.n_games
+            plot_mean_scores.append(mean_score)
+            plot(plot_scores, plot_mean_scores)
 
         clock.tick(60)
 
-
-def ia():
-    component = Components()
-    snake = Snake()
-    food = Food(snake)
-    agent = Agent(snake, food)
-    clock = pygame.time.Clock()
-    move_counter = 0
-
-    while True:
-        move_counter += 1
-
-        key = pygame.key.get_pressed()
-        if key[pygame.K_ESCAPE]:
-            break
-
-        if move_counter > snake.get_snake_speed():
-            move_counter = 0
-
-            state_old = agent.get_state()
-            final_move = agent.get_action(state_old)
-
-            _, done, _ = component.train(snake, food, final_move)
-
-            if done:
-                break
-
-        clock.tick(60)
-
-
-def monte_carlo():
-    component = Components()
-    snake = Snake()
-    food = Food(snake)
-    monte_carlo_agent = MonteCarlo(component, snake, food)
-    clock = pygame.time.Clock()
-    move_counter = 0
-
-    while Screen().get_state():
-        move_counter += 1
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                Screen.end_game()
-                return
-
-        key = pygame.key.get_pressed()
-        if key[pygame.K_ESCAPE]:
-            break
-
-        if move_counter > 0:
-            move_counter = 0
-
-            monte_carlo_agent.agente()
-
-            component.monte_carlo(snake, food)
-
-        clock.tick(60)
+    return -1
 
 
 class Game:
@@ -191,10 +186,10 @@ class Game:
     def game_loop(mode):
         Screen().start_game()
         if mode == 'manual':
-            manual_game()
+            return manual_game()
         elif mode == 'ia':
-            ia()
+            return ia()
         elif mode == 'monteCarlo':
-            monte_carlo()
+            return monte_carlo()
         else:
-            train()
+            return train()

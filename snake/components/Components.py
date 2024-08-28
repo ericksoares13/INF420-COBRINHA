@@ -52,8 +52,6 @@ class Components:
             snake.set_snake_direction((-Screen.get_pixel_size(), 0))
         if key_pressed == pygame.K_RIGHT and snake.get_snake_direction() != (-Screen.get_pixel_size(), 0):
             snake.set_snake_direction((Screen.get_pixel_size(), 0))
-        if key_pressed == pygame.K_ESCAPE:
-            Screen.end_game()
 
     def set_key(self, key):
         self.__key = key
