@@ -64,10 +64,10 @@ class Screen:
                 pygame.draw.line(Screen.__SCREEN, border_color, (x + width, y), (x + width, y + height))
 
         directions = {
-            (-52, 0): 'left',
-            (52, 0): 'right',
-            (0, -52): 'top',
-            (0, 52): 'bottom'
+            (-Screen.__PIXEL_SIZE, 0): 'left',
+            (Screen.__PIXEL_SIZE, 0): 'right',
+            (0, -Screen.__PIXEL_SIZE): 'top',
+            (0, Screen.__PIXEL_SIZE): 'bottom'
         }
 
         delta_before = (part.x - partBefore.x, part.y - partBefore.y) if partBefore else (0, 0)
@@ -75,29 +75,29 @@ class Screen:
 
         if delta_before == delta_after:
             if delta_before in directions:
-                if delta_before in [(-52, 0), (52, 0)]:
+                if delta_before in [(-Screen.__PIXEL_SIZE, 0), (Screen.__PIXEL_SIZE, 0)]:
                     draw_border(['top', 'bottom'])
-                elif delta_before in [(0, -52), (0, 52)]:
+                elif delta_before in [(0, -Screen.__PIXEL_SIZE), (0, Screen.__PIXEL_SIZE)]:
                     draw_border(['left', 'right'])
             else:
                 draw_border(['top', 'bottom', 'left', 'right'])
         elif delta_after == (0, 0):
-            if delta_before == (-52, 0):
+            if delta_before == (-Screen.__PIXEL_SIZE, 0):
                 draw_border(['top', 'bottom', 'left'])
-            elif delta_before == (52, 0):
+            elif delta_before == (Screen.__PIXEL_SIZE, 0):
                 draw_border(['top', 'bottom', 'right'])
-            elif delta_before == (0, -52):
+            elif delta_before == (0, -Screen.__PIXEL_SIZE):
                 draw_border(['left', 'right', 'top'])
-            elif delta_before == (0, 52):
+            elif delta_before == (0, Screen.__PIXEL_SIZE):
                 draw_border(['left', 'right', 'bottom'])
         elif delta_before == (0, 0):
-            if delta_after == (-52, 0):
+            if delta_after == (-Screen.__PIXEL_SIZE, 0):
                 draw_border(['top', 'bottom', 'right'])
-            elif delta_after == (52, 0):
+            elif delta_after == (Screen.__PIXEL_SIZE, 0):
                 draw_border(['top', 'bottom', 'left'])
-            elif delta_after == (0, -52):
+            elif delta_after == (0, -Screen.__PIXEL_SIZE):
                 draw_border(['left', 'right', 'bottom'])
-            elif delta_after == (0, 52):
+            elif delta_after == (0, Screen.__PIXEL_SIZE):
                 draw_border(['left', 'right', 'top'])
         else:
             if directions[delta_before] == 'left' and directions[delta_after] == 'top':
