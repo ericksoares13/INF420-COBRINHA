@@ -23,7 +23,7 @@ class Snake:
     __snake_body = None
     __snake_head = None
     __snake_tail = None
-    __train_it = 0
+    __iteration = 0
     __score = 0
 
     def __init__(self):
@@ -66,8 +66,8 @@ class Snake:
     def get_score(self):
         return self.__score
 
-    def get_train_it(self):
-        return self.__train_it
+    def get_iteration(self):
+        return self.__iteration
 
     def set_snake_direction(self, new_direction):
         self.__snake_direction = new_direction
@@ -78,9 +78,6 @@ class Snake:
         self.__snake_body = self.__snake_body[::-1]
         self.__change_direction()
         self.__update_velocity()
-        self.__score += 1
-
-    def update_score(self):
         self.__score += 1
 
     def __change_direction(self):
@@ -113,7 +110,7 @@ class Snake:
         self.__snake_body.append(self.__snake_head.copy())
         self.__snake_tail = self.__snake_body[0]
         self.__snake_body.pop(0)
-        self.__train_it += 1
+        self.__iteration += 1
 
     def collide_any_part(self, pos):
         aux = Screen.get_pixel_size() // 2
@@ -136,5 +133,5 @@ class Snake:
         self.__snake_body = [self.__snake_head.copy()]
         self.__snake_direction = (0, 0)
         self.__last_direction = (0, 0)
-        self.__train_it = 0
+        self.__iteration = 0
         self.__score = 0

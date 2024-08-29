@@ -62,11 +62,13 @@ class Components:
 
     def update(self, snake, food):
         if self._ate:
-            print("Tamanho:", snake.get_snake_size())
             snake.grow_snake()
-            food.randon_position()
-            self._ate = False
-            self.set_key(direction_map[snake.get_last_snake_direction()])
+            if snake.get_snake_size() == (Screen.get_screen_height() // Screen.get_pixel_size()) ** 2:
+                Screen.end_game()
+            else:
+                food.randon_position()
+                self._ate = False
+                self.set_key(direction_map[snake.get_last_snake_direction()])
 
     def generate(self, snake, food):
         self.__draw_components(snake, food)
@@ -117,7 +119,7 @@ class Components:
         self.__feeding_snake(snake, food)
 
         if ((snake.snake_collide_with_border() or snake.collide_without_head(snake.get_snake_head_position()))
-                or (mode == 'train' and snake.get_train_it() >
+                or (mode == 'train' and snake.get_iteration() >
                     10 * snake.get_snake_size() * (Screen().get_screen_width() // Screen.get_pixel_size()))):
             return -10, True, snake.get_score()
 
