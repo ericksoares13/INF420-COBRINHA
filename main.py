@@ -15,6 +15,10 @@ font_path = "font/PressStart2P-Regular.ttf"
 game_font = pygame.font.Font(font_path, 25)
 title_font = pygame.font.Font(font_path, 40)
 
+menu_state = 'main'
+selected_mode = None
+mouse_clicked = False
+
 
 def draw_text(text, font, color, surface, x, y):
     text_obj = font.render(text, True, color)
@@ -23,13 +27,20 @@ def draw_text(text, font, color, surface, x, y):
 
 
 def draw_button(label, x, y, width, height, active_color, inactive_color, action=None):
+    global mouse_clicked
     mouse_pos = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
     if x < mouse_pos[0] < x + width and y < mouse_pos[1] < y + height:
         pygame.draw.rect(screen, active_color, (x, y, width, height))
-        if click[0] == 1 and action:
-            return action()
+        if click[0] == 1 and not mouse_clicked:
+            mouse_clicked = True
+            if action:
+                return action()
+            else:
+                return True
+        elif click[0] == 0:
+            mouse_clicked = False
     else:
         pygame.draw.rect(screen, inactive_color, (x, y, width, height))
 
@@ -87,7 +98,7 @@ def apply_blur(surface, radius):
     return blurred_surface
 
 
-def game_over_display(score_iterations, mode):
+def game_over_display(score_iterations, mode, level):
     if score_iterations is False:
         return
 
@@ -117,11 +128,11 @@ def game_over_display(score_iterations, mode):
         draw_centered_text(f"Pontuação:{score_iterations[0]}", game_font, (0, 0, 0), screen, screen.get_width() + 4, square_y + 420, 50)
 
         if draw_button("Voltar ao Menu", 188, 410, 413, 60,
-                       navy_blue, (255, 255, 255), main_menu):
+                       navy_blue, (255, 255, 255)):
             break
 
         aux = draw_button("Jogar Novamente", 188, 500, 413, 60, navy_blue, (255, 255, 255),
-                          lambda: Game.game_loop(mode))
+                          lambda: Game.game_loop(mode, level))
 
         if aux is not False:
             score_iterations = aux
@@ -136,6 +147,7 @@ def game_over_display(score_iterations, mode):
 
 
 def main_menu():
+    global menu_state, selected_mode
     video_path = "menu/menu_video.mp4"
     cap = load_video(video_path)
 
@@ -154,17 +166,28 @@ def main_menu():
         light_blue = pygame.Color(173, 216, 230)
         navy_blue = pygame.Color("#afa9d2")
 
-        game_over_display(draw_button("Manual", 182, 227, 416, 60, navy_blue, light_blue,
-                                      lambda: Game.game_loop("manual")), "manual")
-
-        game_over_display(draw_button("Deep Q-Learning", 182, 332, 416, 60, navy_blue, light_blue,
-                                      lambda: Game.game_loop("ia")), "ia")
-
-        game_over_display(draw_button("Monte Carlo", 182, 436, 416, 60, navy_blue, light_blue,
-                                      lambda: Game.game_loop("monteCarlo")), "monteCarlo")
-
-        draw_button("Training", 182, 540, 416, 60, navy_blue, light_blue,
-                    lambda: Game.game_loop("train"))
+        if menu_state == 'main':
+            if draw_button("Manual", 182, 227, 416, 60, navy_blue, light_blue, lambda: select_mode('manual')):
+                menu_state = 'difficulty'
+            if draw_button("Deep Q-Learning", 182, 332, 416, 60, navy_blue, light_blue, lambda: select_mode('ia')):
+                menu_state = 'difficulty'
+            if draw_button("Monte Carlo", 182, 436, 416, 60, navy_blue, light_blue, lambda: select_mode('monteCarlo')):
+                menu_state = 'difficulty'
+            if draw_button("Training", 182, 540, 416, 60, navy_blue, light_blue, lambda: select_mode('train')):
+                menu_state = 'difficulty'
+        elif menu_state == 'difficulty':
+            if draw_button("Fácil", 182, 227, 416, 60, navy_blue, light_blue,
+                           lambda: start_game(selected_mode, 'easy')):
+                menu_state = 'main'
+            if draw_button("Médio", 182, 332, 416, 60, navy_blue, light_blue,
+                           lambda: start_game(selected_mode, 'medium')):
+                menu_state = 'main'
+            if draw_button("Difícil", 182, 436, 416, 60, navy_blue, light_blue,
+                           lambda: start_game(selected_mode, 'hard')):
+                menu_state = 'main'
+            if draw_button("Extremo", 182, 540, 416, 60, navy_blue, light_blue,
+                           lambda: start_game(selected_mode, 'extreme')):
+                menu_state = 'main'
 
         key = pygame.key.get_pressed()
         if key[pygame.K_ESCAPE]:
@@ -174,5 +197,15 @@ def main_menu():
         pygame.display.flip()
         clock.tick(60)
 
+
+def select_mode(mode):
+    global selected_mode
+    selected_mode = mode
+    return True
+
+
+def start_game(mode, difficulty):
+    game_over_display(Game.game_loop(mode, difficulty), mode, difficulty)
+    return True
 
 main_menu()

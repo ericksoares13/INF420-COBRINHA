@@ -183,13 +183,17 @@ class Game:
             self._initialized = True
 
     @staticmethod
-    def game_loop(mode):
+    def game_loop(mode, level):
         Screen().start_game()
         if mode == 'manual':
+            Screen.set_difficulty(level)
             return manual_game()
         elif mode == 'ia':
+            Screen.set_difficulty(level)
             return ia()
         elif mode == 'monteCarlo':
+            Screen.set_difficulty(level)
             return monte_carlo()
         else:
+            Screen.set_difficulty(level)
             return train()

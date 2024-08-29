@@ -14,14 +14,6 @@ class Direction(Enum):
     DOWN = pygame.K_DOWN
 
 
-direction_map = {
-    (0, -Screen.get_pixel_size()): pygame.K_UP,
-    (0, Screen.get_pixel_size()): pygame.K_DOWN,
-    (-Screen.get_pixel_size(), 0): pygame.K_LEFT,
-    (Screen.get_pixel_size(), 0): pygame.K_RIGHT
-}
-
-
 class Components:
     __move_counter = 0
     __key = pygame.K_SPACE
@@ -67,6 +59,13 @@ class Components:
                 food.end_food()
                 Screen.end_game()
             else:
+                direction_map = {
+                    (0, -Screen.get_pixel_size()): pygame.K_UP,
+                    (0, Screen.get_pixel_size()): pygame.K_DOWN,
+                    (-Screen.get_pixel_size(), 0): pygame.K_LEFT,
+                    (Screen.get_pixel_size(), 0): pygame.K_RIGHT
+                }
+
                 food.randon_position()
                 self._ate = False
                 self.set_key(direction_map[snake.get_last_snake_direction()])

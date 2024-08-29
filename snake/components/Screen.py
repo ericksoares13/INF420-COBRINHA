@@ -2,7 +2,6 @@ import pygame
 
 
 class Screen:
-    # 20, 26, 30, 52
     __SCREEN_WIDTH = 780
     __SCREEN_HEIGHT = 780
     __PIXEL_SIZE = 52
@@ -45,6 +44,17 @@ class Screen:
     @staticmethod
     def get_game_over_screen():
         return Screen.__game_over
+
+    @staticmethod
+    def set_difficulty(level):
+        if level == "easy":
+            Screen.__PIXEL_SIZE = 52
+        elif level == "medium":
+            Screen.__PIXEL_SIZE = 30
+        elif level == "hard":
+            Screen.__PIXEL_SIZE = 26
+        elif level == "extreme":
+            Screen.__PIXEL_SIZE = 20
 
     @staticmethod
     def draw_snake(part, ratio, partBefore, partAfter):
