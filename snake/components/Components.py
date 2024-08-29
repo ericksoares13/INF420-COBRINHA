@@ -72,8 +72,9 @@ class Components:
                 self.set_key(direction_map[snake.get_last_snake_direction()])
 
     def generate(self, snake, food):
-        self.__draw_components(snake, food)
-        Screen.flip_display()
+        if Screen.get_state():
+            self.__draw_components(snake, food)
+            Screen.flip_display()
 
     def __draw_components(self, snake, food):
         Screen.draw_food(food.get_food_pixel())
@@ -107,7 +108,7 @@ class Components:
         elif np.array_equal(action, [0, 1, 0]):     # direita
             next_idx = (idx + 1) % 4
             new_dir = clock_wise[next_idx]
-        else:                                           # esquerda
+        else:                                       # esquerda
             next_idx = (idx - 1) % 4
             new_dir = clock_wise[next_idx]
 

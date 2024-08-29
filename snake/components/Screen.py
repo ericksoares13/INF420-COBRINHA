@@ -7,6 +7,7 @@ class Screen:
     __SCREEN_HEIGHT = 780
     __PIXEL_SIZE = 52
     __SCREEN = None
+    __game_over = None
     __running = True
     _INSTANCE = None
 
@@ -40,6 +41,10 @@ class Screen:
     @staticmethod
     def get_state():
         return Screen.__running
+
+    @staticmethod
+    def get_game_over_screen():
+        return Screen.__game_over
 
     @staticmethod
     def draw_snake(part, ratio, partBefore, partAfter):
@@ -126,6 +131,7 @@ class Screen:
 
     @staticmethod
     def flip_display():
+        Screen.__game_over = Screen.__SCREEN.copy()
         pygame.display.update()
         Screen.__SCREEN.fill("white")
         w = Screen.__SCREEN_WIDTH
