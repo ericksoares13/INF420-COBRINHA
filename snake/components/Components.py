@@ -44,13 +44,13 @@ class Components:
 
     def __process_key(self, snake):
         key_pressed = self.__key
-        if key_pressed == pygame.K_UP and snake.get_snake_direction() != (0, Screen.get_pixel_size()):
+        if key_pressed == pygame.K_UP and snake.get_last_snake_direction() != (0, Screen.get_pixel_size()):
             snake.set_snake_direction((0, -Screen.get_pixel_size()))
-        if key_pressed == pygame.K_DOWN and snake.get_snake_direction() != (0, -Screen.get_pixel_size()):
+        if key_pressed == pygame.K_DOWN and snake.get_last_snake_direction() != (0, -Screen.get_pixel_size()):
             snake.set_snake_direction((0, Screen.get_pixel_size()))
-        if key_pressed == pygame.K_LEFT and snake.get_snake_direction() != (Screen.get_pixel_size(), 0):
+        if key_pressed == pygame.K_LEFT and snake.get_last_snake_direction() != (Screen.get_pixel_size(), 0):
             snake.set_snake_direction((-Screen.get_pixel_size(), 0))
-        if key_pressed == pygame.K_RIGHT and snake.get_snake_direction() != (-Screen.get_pixel_size(), 0):
+        if key_pressed == pygame.K_RIGHT and snake.get_last_snake_direction() != (-Screen.get_pixel_size(), 0):
             snake.set_snake_direction((Screen.get_pixel_size(), 0))
 
     def set_key(self, key):
@@ -66,7 +66,7 @@ class Components:
             snake.grow_snake()
             food.randon_position()
             self._ate = False
-            self.set_key(direction_map[snake.get_snake_direction()])
+            self.set_key(direction_map[snake.get_last_snake_direction()])
 
     def generate(self, snake, food):
         self.__draw_components(snake, food)

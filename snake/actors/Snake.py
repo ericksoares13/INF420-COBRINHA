@@ -18,6 +18,7 @@ def collide_with_border(pos):
 
 class Snake:
     __snake_direction = (0, 0)
+    __last_direction = (0, 0)
     __snake_speed = 15
     __snake_body = None
     __snake_head = None
@@ -59,6 +60,9 @@ class Snake:
     def get_snake_direction(self):
         return self.__snake_direction
 
+    def get_last_snake_direction(self):
+        return self.__last_direction
+
     def get_score(self):
         return self.__score
 
@@ -83,6 +87,7 @@ class Snake:
         last = self.__snake_body[-1]
         second_last = self.__snake_body[-2]
         self.__snake_direction = (last[0] - second_last[0], last[1] - second_last[1])
+        self.__last_direction = self.__snake_direction
 
     def __update_velocity(self):
         max_length = Screen().get_quant_pixel()
@@ -103,6 +108,7 @@ class Snake:
             Screen().end_game()
 
     def move_snake_whitout_colision(self):
+        self.__last_direction = self.__snake_direction
         self.__snake_head.move_ip(self.__snake_direction)
         self.__snake_body.append(self.__snake_head.copy())
         self.__snake_tail = self.__snake_body[0]
@@ -129,5 +135,6 @@ class Snake:
         self.__snake_head.center = (x_position, y_position)
         self.__snake_body = [self.__snake_head.copy()]
         self.__snake_direction = (0, 0)
+        self.__last_direction = (0, 0)
         self.__train_it = 0
         self.__score = 0

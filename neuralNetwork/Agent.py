@@ -44,10 +44,10 @@ class Agent:
         point_u = (head_x, head_y - Screen.get_pixel_size())
         point_d = (head_x, head_y + Screen.get_pixel_size())
 
-        dir_l = self.snake.get_snake_direction() == (-Screen.get_pixel_size(), 0)
-        dir_r = self.snake.get_snake_direction() == (Screen.get_pixel_size(), 0)
-        dir_u = self.snake.get_snake_direction() == (0, -Screen.get_pixel_size())
-        dir_d = self.snake.get_snake_direction() == (0, Screen.get_pixel_size())
+        dir_l = self.snake.get_last_snake_direction() == (-Screen.get_pixel_size(), 0)
+        dir_r = self.snake.get_last_snake_direction() == (Screen.get_pixel_size(), 0)
+        dir_u = self.snake.get_last_snake_direction() == (0, -Screen.get_pixel_size())
+        dir_d = self.snake.get_last_snake_direction() == (0, Screen.get_pixel_size())
 
         tail_x, tail_y = self.snake.get_snake_tail_position()
         dir_tail_x, dir_tail_y = self.snake.get_snake_tail_direction()

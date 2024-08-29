@@ -85,7 +85,7 @@ class MonteCarlo:
         return not (collide_with_border(nova_pos) or self.snake.collide_without_head(nova_pos))
 
     def agente(self):
-        if self.snake.get_snake_direction() == (0, 0):
+        if self.snake.get_last_snake_direction() == (0, 0):
             direcao = random.choice(direcoes_possiveis)
             self.snake.set_snake_direction(direcao)
         else:
