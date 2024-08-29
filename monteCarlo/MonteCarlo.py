@@ -45,7 +45,7 @@ class MonteCarlo:
 
             if copia_jogo.snake.get_snake_head_position() == copia_jogo.food.get_position():
                 copia_jogo.snake.grow_snake()
-                if copia_jogo.snake.get_snake_size() == (Screen.get_screen_height() // Screen.get_pixel_size()) ** 2:
+                if copia_jogo.snake.get_snake_size() == ((Screen.get_screen_height() // Screen.get_pixel_size()) - 1) ** 2:
                     copia_jogo.food.end_food()
                 else:
                     copia_jogo.food.randon_position()

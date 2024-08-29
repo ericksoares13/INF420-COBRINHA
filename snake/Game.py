@@ -43,7 +43,7 @@ def manual_game():
 
         clock.tick(60)
 
-    return snake.get_score()
+    return snake.get_score(), snake.get_iteration()
 
 
 def ia():
@@ -76,7 +76,7 @@ def ia():
 
         clock.tick(60)
 
-    return snake.get_score()
+    return snake.get_score(), snake.get_iteration()
 
 
 def monte_carlo():
@@ -98,7 +98,7 @@ def monte_carlo():
 
         clock.tick(60)
 
-    return snake.get_score()
+    return snake.get_score(), snake.get_iteration()
 
 
 def plot(scores, mean_scores, filename='./model/plot.png'):

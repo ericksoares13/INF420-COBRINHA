@@ -63,7 +63,7 @@ class Components:
     def update(self, snake, food):
         if self._ate:
             snake.grow_snake()
-            if snake.get_snake_size() == (Screen.get_screen_height() // Screen.get_pixel_size()) ** 2:
+            if snake.get_snake_size() == ((Screen.get_screen_height() // Screen.get_pixel_size()) - 1) ** 2:
                 food.end_food()
                 Screen.end_game()
             else:

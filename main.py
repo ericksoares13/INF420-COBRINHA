@@ -37,6 +37,15 @@ def draw_button(label, x, y, width, height, active_color, inactive_color, action
     return False
 
 
+def draw_centered_text(text, font, color, screen, screen_width,  screen_height, y_offset):
+    # Renderize o texto
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect(center=(screen_width / 2, screen_height / 2 + y_offset))
+
+    # Desenhe o texto na tela
+    screen.blit(text_surface, text_rect)
+
+
 def load_video(video_path):
     cap = cv2.VideoCapture(video_path)
 
@@ -78,14 +87,14 @@ def apply_blur(surface, radius):
     return blurred_surface
 
 
-def game_over_display(score, mode):
-    if score is False:
+def game_over_display(score_iterations, mode):
+    if score_iterations is False:
         return
 
     while True:
-        screen.blit(apply_blur(Screen().get_game_over_screen(), 6), (0, 0))
+        screen.blit(apply_blur(Screen().get_game_over_screen(), 8), (0, 0))
 
-        square_width, square_height = 500, 300
+        square_width, square_height = 450, 400
         square_x = (screen.get_width() - square_width) // 2 + 3
         square_y = (screen.get_height() - square_height) // 2
 
@@ -99,18 +108,23 @@ def game_over_display(score, mode):
         pygame.draw.rect(screen, (100, 100, 100), shadow_rect,border_radius=border_radius)
         pygame.draw.rect(screen, light_blue, (square_x, square_y, square_width, square_height),border_radius=border_radius)
 
-        draw_text("Game Over", title_font, "#00009C", screen, screen.get_width() // 2 + 5, square_y + 50)
-        draw_text(f"Score: {score}", game_font, (0, 0, 0), screen, screen.get_width() // 2 + 4, square_y + 100)
+        if score_iterations[0] + 1 == ((Screen.get_screen_width() // Screen.get_pixel_size()) - 1) ** 2:
+            draw_text("You Won", title_font, "#00009C", screen, screen.get_width() // 2 + 2, square_y + 50)
+        else:
+            draw_text("Game Over", title_font, "#00009C", screen, screen.get_width() // 2 + 6, square_y + 50)
 
-        if draw_button("Voltar ao Menu", 188, 375, 413, 60,
+        draw_centered_text(f"Movimento:{score_iterations[1]}", game_font, (0, 0, 0), screen, screen.get_width() + 4, square_y + 520, -50)
+        draw_centered_text(f"Pontuação:{score_iterations[0]}", game_font, (0, 0, 0), screen, screen.get_width() + 4, square_y + 420, 50)
+
+        if draw_button("Voltar ao Menu", 188, 410, 413, 60,
                        navy_blue, (255, 255, 255), main_menu):
             break
 
-        aux = draw_button("Jogar Novamente", 188, 455, 413, 60, navy_blue, (255, 255, 255),
+        aux = draw_button("Jogar Novamente", 188, 500, 413, 60, navy_blue, (255, 255, 255),
                           lambda: Game.game_loop(mode))
 
         if aux is not False:
-            score = aux
+            score_iterations = aux
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
