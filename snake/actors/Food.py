@@ -29,6 +29,9 @@ class Food:
 
         return self.__food
 
+    def end_food(self):
+        self.__food.center = (-1000, -1000)
+
     def get_position(self):
         return self.__food.center
 
