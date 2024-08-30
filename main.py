@@ -1,6 +1,7 @@
 import pygame
 import cv2
 import numpy as np
+import math
 
 from snake.Game import Game
 from snake.components.Screen import Screen
@@ -14,6 +15,9 @@ pygame.display.set_caption("Snake")
 font_path = "font/PressStart2P-Regular.ttf"
 game_font = pygame.font.Font(font_path, 25)
 title_font = pygame.font.Font(font_path, 40)
+developer_font = pygame.font.Font(font_path, 8)
+help_font = pygame.font.Font(font_path, 22)
+rules_font = pygame.font.Font(font_path, 16)
 
 menu_state = 'main'
 selected_mode = None
@@ -145,6 +149,142 @@ def game_over_display(score_iterations, mode, level):
         pygame.display.flip()
         clock.tick(15)
 
+def draw_help_icon(x, y, radius, color, font, text, text_color):
+    pygame.draw.circle(screen, color, (x, y), radius)
+    draw_text(text, font, text_color, screen, x, y)
+
+
+def help_icon_clicked(x, y, radius):
+    mouse_pos = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+
+    dist = math.sqrt((mouse_pos[0] - x) ** 2 + (mouse_pos[1] - y) ** 2)
+
+    if dist < radius and click[0] == 1:
+        return True
+
+    return False
+
+
+def draw_text_wrapped_left(text, font, color, surface, x, y, max_width):
+    words = text.split(' ')
+    lines = []
+    current_line = ""
+
+    for word in words:
+        test_line = current_line + word + " "
+        test_width, _ = font.size(test_line)
+
+        if test_width <= max_width:
+            current_line = test_line
+        else:
+            lines.append(current_line)
+            current_line = word + " "
+
+    lines.append(current_line)
+
+    for i, line in enumerate(lines):
+        line_surface = font.render(line.strip(), True, color)
+        line_rect = line_surface.get_rect(topleft=(x, y + i * font.get_linesize()))
+        surface.blit(line_surface, line_rect)
+
+
+def draw_background():
+    w = screen.get_width()
+    h = screen.get_height()
+    b = Screen.get_pixel_size() // 2
+
+    background_surface = pygame.Surface((w, h))
+
+    background_surface.fill("white")
+
+    for x in range(b, w, b * 2):
+        pygame.draw.line(background_surface, (230, 230, 230), (x, 0), (x, h))
+    for y in range(b, h, b * 2):
+        pygame.draw.line(background_surface, (230, 230, 230), (0, y), (w, y))
+
+    pygame.draw.rect(background_surface, "black", pygame.Rect(0, 0, w, b))
+    pygame.draw.rect(background_surface, "black", pygame.Rect(0, 0, b, h))
+    pygame.draw.rect(background_surface, "black", pygame.Rect(0, h - b, w, b))
+    pygame.draw.rect(background_surface, "black", pygame.Rect(w - b, 0, b, h))
+
+    return background_surface
+
+
+def apply_blur_rules(surface):
+    array = pygame.surfarray.array3d(surface)
+    array = cv2.GaussianBlur(array, (15, 15), 0)
+    return pygame.surfarray.make_surface(array)
+
+
+def show_game_rules():
+    while True:
+        background = draw_background()
+        blurred_background = apply_blur_rules(background)
+
+        screen.blit(blurred_background, (0, 0))
+
+        draw_text("REGRAS DO JOGO", title_font, (0, 0, 0), screen, 390, 108)
+
+        square_width, square_height = 570, 510
+        square_x = (screen.get_width() - square_width) // 2 + 3
+        square_y = (screen.get_height() - square_height) // 2 + 25
+
+        shadow_offset = 0.5
+        shadow_rect = (square_x - shadow_offset, square_y - shadow_offset, square_width + (4 * shadow_offset), square_height + (4 * shadow_offset))
+        border_radius = 20
+
+        light_blue = pygame.Color(173, 216, 230)
+        navy_blue = pygame.Color("#afa9d2")
+
+        pygame.draw.rect(screen, (100, 100, 100), shadow_rect, border_radius=border_radius)
+        pygame.draw.rect(screen, light_blue, (square_x, square_y, square_width, square_height),
+                         border_radius=border_radius)
+
+        numbers = [
+            "1. ",
+            "2. ",
+            "3. ",
+            "4. ",
+            "5. "
+        ]
+
+        rules = [
+            "Use as setas do teclado para mover a cobrinha.",
+            "Coma a comida para crescer, ganhar pontos e velocidade.",
+            "Evite bater nas paredes ou no próprio corpo, senão, o jogo termina.",
+            "A cada comida alcançada, a cabeça da cobra trocará de lugar com a ponta de sua cauda.",
+            "Aperte a tecla 'q' para encerrar uma partida ou voltar ao menu."
+        ]
+
+        y_offset = 190
+        y_offset_number = 197
+
+        spacings = [0, 50, 100, 160, 240]
+        spacing_number = [0, 70, 140, 220, 320]
+
+        # Desenhando cada regra com o espaçamento ajustado
+        for i, (number, rule) in enumerate(zip(numbers, rules)):
+            draw_text(number, rules_font, (0, 0, 0), screen, 155, y_offset_number + spacing_number[i])
+            draw_text_wrapped_left(rule, rules_font, (0, 0, 0), screen, 180, y_offset + spacings[i], 490)
+            y_offset += 20
+
+        if draw_button("Voltar ao Menu", 182, 585, 416, 60, navy_blue, (255, 255, 255)):
+            break
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+        pygame.display.flip()
+        clock.tick(60)
+
+
+def draw_developers_name(screen, font, color, x, y):
+    developers_text = "Developed by: Erick Soares, Júlio Henrique"
+    draw_text(developers_text, font, color, screen, x, y)
+
 
 def main_menu():
     global menu_state, selected_mode
@@ -194,6 +334,16 @@ def main_menu():
             if draw_button("Extremo", 182, 540, 416, 60, navy_blue, light_blue,
                            lambda: start_game(selected_mode, 'extreme')):
                 menu_state = 'main'
+
+        help_x = 728
+        help_y = 728
+        radius = 20
+        draw_help_icon(help_x, help_y, radius, light_blue, help_font, '?', (0, 0, 0))
+
+        if help_icon_clicked(help_x, help_y, radius):
+            show_game_rules()
+
+        draw_developers_name(screen, developer_font, (255, 255, 255), 390, 767)
 
         key = pygame.key.get_pressed()
         if key[pygame.K_ESCAPE]:
