@@ -110,7 +110,8 @@ class Snake:
         self.__snake_body.append(self.__snake_head.copy())
         self.__snake_tail = self.__snake_body[0]
         self.__snake_body.pop(0)
-        self.__iteration += 1
+        if self.__last_direction != (0, 0):
+            self.__iteration += 1
 
     def collide_any_part(self, pos):
         aux = Screen.get_pixel_size() // 2
