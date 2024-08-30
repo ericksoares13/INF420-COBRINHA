@@ -67,7 +67,7 @@ def ia():
             move_counter = 0
 
             state_old = agent.get_state()
-            final_move = agent.get_action(state_old)
+            final_move = agent.play_state(state_old)
 
             _, done, _ = component.train(snake, food, final_move)
 

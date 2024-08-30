@@ -148,3 +148,13 @@ class Agent:
 
         final_move[move] = 1
         return final_move
+
+    def play_state(self, state):
+        final_move = [0, 0, 0]
+
+        state0 = torch.tensor(state, dtype=torch.float)
+        prediction = self.model(state0)
+        move = torch.argmax(prediction).item()
+
+        final_move[move] = 1
+        return final_move
