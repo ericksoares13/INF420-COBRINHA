@@ -5,9 +5,6 @@ import numpy as np
 from snake.components.Screen import Screen
 from snake.actors.Snake import collide_with_border
 
-direcoes_possiveis = [(0, -Screen().get_pixel_size()), (0, Screen().get_pixel_size()),
-                      (-Screen().get_pixel_size(), 0), (Screen().get_pixel_size(), 0)]
-
 
 class MonteCarlo:
     def __init__(self, component, snake, food):
@@ -18,7 +15,8 @@ class MonteCarlo:
     def monte_carlo_agente(self, simulacoes=40):
         pontuacoes = {}
 
-        for direcao in direcoes_possiveis:
+        for direcao in [(0, -Screen().get_pixel_size()), (0, Screen().get_pixel_size()),
+                        (-Screen().get_pixel_size(), 0), (Screen().get_pixel_size(), 0)]:
             if self.movimento_valido(direcao):
                 pontuacoes[direcao] = self.simular_jogo(direcao, simulacoes)
 
@@ -29,7 +27,8 @@ class MonteCarlo:
             else:
                 melhor_direcao = max(pontuacoes, key=pontuacoes.get)
         else:
-            melhor_direcao = random.choice(direcoes_possiveis)
+            melhor_direcao = random.choice([(0, -Screen().get_pixel_size()), (0, Screen().get_pixel_size()),
+                                            (-Screen().get_pixel_size(), 0), (Screen().get_pixel_size(), 0)])
 
         return melhor_direcao
 
@@ -53,7 +52,8 @@ class MonteCarlo:
 
             while (movimentos < copia_jogo.snake.get_snake_size() *
                    (Screen().get_screen_width() // Screen().get_pixel_size())):
-                possiveis = copy.deepcopy(direcoes_possiveis)
+                possiveis = copy.deepcopy([(0, -Screen().get_pixel_size()), (0, Screen().get_pixel_size()),
+                                           (-Screen().get_pixel_size(), 0), (Screen().get_pixel_size(), 0)])
                 while possiveis:
                     direcao_aleatoria = random.choice(possiveis)
 
@@ -89,7 +89,8 @@ class MonteCarlo:
 
     def agente(self):
         if self.snake.get_last_snake_direction() == (0, 0):
-            direcao = random.choice(direcoes_possiveis)
+            direcao = random.choice([(0, -Screen().get_pixel_size()), (0, Screen().get_pixel_size()),
+                                     (-Screen().get_pixel_size(), 0), (Screen().get_pixel_size(), 0)])
             self.snake.set_snake_direction(direcao)
         else:
             direcao = self.monte_carlo_agente()

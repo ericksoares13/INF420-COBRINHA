@@ -167,7 +167,7 @@ def train():
 
         clock.tick(60)
 
-    return -1
+    return False
 
 
 class Game:
