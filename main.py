@@ -161,6 +161,12 @@ def main_menu():
                 pygame.quit()
                 return
 
+        pygame.event.get()
+        key = pygame.key.get_pressed()
+
+        if key[pygame.K_q]:
+            menu_state = 'main'
+
         draw_text("JOGO DA COBRINHA", title_font, (0, 0, 0), screen, 390, 108)
 
         light_blue = pygame.Color(173, 216, 230)
@@ -207,5 +213,6 @@ def select_mode(mode):
 def start_game(mode, difficulty):
     game_over_display(Game.game_loop(mode, difficulty), mode, difficulty)
     return True
+
 
 main_menu()
