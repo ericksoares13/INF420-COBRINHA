@@ -44,16 +44,16 @@ class MonteCarlo:
 
             if copia_jogo.snake.get_snake_head_position() == copia_jogo.food.get_position():
                 copia_jogo.snake.grow_snake()
+                comidas += 1
                 if copia_jogo.snake.get_snake_size() == ((Screen.get_screen_height() // Screen.get_pixel_size()) - 1) ** 2:
                     copia_jogo.food.end_food()
                 else:
                     copia_jogo.food.randon_position()
-                    comidas += 1
 
             while (movimentos < copia_jogo.snake.get_snake_size() *
                    (Screen().get_screen_width() // Screen().get_pixel_size())):
-                possiveis = copy.deepcopy([(0, -Screen().get_pixel_size()), (0, Screen().get_pixel_size()),
-                                           (-Screen().get_pixel_size(), 0), (Screen().get_pixel_size(), 0)])
+                possiveis = [(0, -Screen().get_pixel_size()), (0, Screen().get_pixel_size()),
+                             (-Screen().get_pixel_size(), 0), (Screen().get_pixel_size(), 0)]
                 while possiveis:
                     direcao_aleatoria = random.choice(possiveis)
 
@@ -65,8 +65,12 @@ class MonteCarlo:
 
                         if copia_jogo.snake.get_snake_head_position() == copia_jogo.food.get_position():
                             copia_jogo.snake.grow_snake()
-                            copia_jogo.food.randon_position()
                             comidas += 1
+                            if copia_jogo.snake.get_snake_size() == (
+                                    (Screen.get_screen_height() // Screen.get_pixel_size()) - 1) ** 2:
+                                copia_jogo.food.end_food()
+                            else:
+                                copia_jogo.food.randon_position()
                         break
                     else:
                         possiveis.remove(direcao_aleatoria)
