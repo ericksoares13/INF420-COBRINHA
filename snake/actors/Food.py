@@ -17,15 +17,20 @@ class Food:
 
     def randon_position(self):
         pixel_size = Screen.get_pixel_size()
-        while True:
-            self.__x = random.randint(1, (Screen.get_screen_width() - pixel_size) // pixel_size)
-            self.__y = random.randint(1, (Screen.get_screen_height() - pixel_size) // pixel_size)
-            self.__x = self.__x * pixel_size
-            self.__y = self.__y * pixel_size
+        screen_width = Screen.get_screen_width()
+        screen_height = Screen.get_screen_height()
 
-            if not self.snake.collide_any_part((self.__x, self.__y)):
-                self.__food.center = (self.__x, self.__y)
-                break
+        possible_positions = [
+            (x * pixel_size, y * pixel_size)
+            for x in range(1, (screen_width - pixel_size) // pixel_size)
+            for y in range(1, (screen_height - pixel_size) // pixel_size)
+        ]
+
+        valid_positions = [pos for pos in possible_positions if not self.snake.collide_any_part(pos)]
+
+        if valid_positions:
+            self.__x, self.__y = random.choice(valid_positions)
+            self.__food.center = (self.__x, self.__y)
 
         return self.__food
 
