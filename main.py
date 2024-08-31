@@ -219,6 +219,11 @@ def apply_blur_rules(surface):
 
 def show_game_rules():
     while True:
+        pygame.event.get()
+        key = pygame.key.get_pressed()
+        if key[pygame.K_q]:
+            break
+
         background = draw_background()
         blurred_background = apply_blur_rules(background)
 
