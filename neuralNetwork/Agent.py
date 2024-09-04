@@ -28,12 +28,9 @@ class Agent:
 
     def _load_model(self):
         try:
-            self.model.load_state_dict(torch.load("./model/model.pth"))
-            print("Modelo carregado com sucesso.")
-        except FileNotFoundError:
-            print("Nenhum modelo salvo encontrado, iniciando novo treinamento.")
-        except Exception as e:
-            print(f"Erro ao carregar o modelo: {e}")
+            self.model.load_state_dict(torch.load("./model/bestModel.pth"))
+        finally:
+            pass
 
     def get_state(self):
         head_x, head_y = self.snake.get_snake_head_position()

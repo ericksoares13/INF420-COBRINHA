@@ -79,7 +79,7 @@ class MonteCarlo:
                     break
 
             tamanho_cobra = int(copia_jogo.snake.get_snake_size())
-            expoente = tamanho_cobra * 0.25
+            expoente = tamanho_cobra * 0.01
 
             pontuacao = (comidas + 1) * (movimentos ** expoente)
             pontuacoes.append(pontuacao)
